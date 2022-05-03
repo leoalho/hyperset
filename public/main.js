@@ -51,6 +51,25 @@ function comparePoints(a,b){
     return b.gamepoints-a.gamepoints
 }
 
+function InitRhomboidEdges(index){
+    path1 = new Path2D();
+    x = cards[index].x;
+    y = cards[index].y;
+    path1.moveTo(x,y);
+    path1.lineTo(x+size,y+size);
+    path1.lineTo(x+size*2,y);
+    path1.lineTo(x+size,y-size);
+    path1.lineTo(x,y);
+    path1.lineTo(x+size*2,y);
+    path1.moveTo(x+size,y-size);
+    path1.lineTo(x+size,y+size);
+    return path1;
+}
+
+for(let i=0; i<cards.length; i++){
+    cards[i].form=InitRhomboidEdges(i);
+}
+
 function drawRhomboid(s1,s2,s3,s4,x,y,color){
     //draws a single rhomboid, s1 NW, s2 NE, s3 SW, s4 SE corner, color denotes the color of the borders.
 
@@ -82,6 +101,7 @@ function drawRhomboid(s1,s2,s3,s4,x,y,color){
     ctx.lineTo(x+size,y+size);
     ctx.fill();
 
+    /*
     ctx.beginPath();
     ctx.strokeStyle = color
     ctx.moveTo(x,y);
@@ -93,6 +113,7 @@ function drawRhomboid(s1,s2,s3,s4,x,y,color){
     ctx.moveTo(x+size,y-size);
     ctx.lineTo(x+size,y+size);
     ctx.stroke();
+    */
 
 }
 function drawBackground(){
@@ -120,6 +141,9 @@ function drawBoard(x,y){
             currentCard = board[a][b];
             var boardPosition = cards[cardCounter];
             drawRhomboid(colors[currentCard.shape[0]], colors[currentCard.shape[1]], colors[currentCard.shape[2]], colors[currentCard.shape[3]], boardPosition.x, boardPosition.y, cards[cardCounter].color);
+            ctx.strokeStyle = boardPosition.color;
+            ctx.beginPath();
+            ctx.stroke(boardPosition.form);
             cardCounter ++;
         }
     }
@@ -284,13 +308,21 @@ function cursorLocation(e){
     let corx = e.clientX - rect.left;
     let cory = e.clientY - rect.top;
     for (let i=0; i<24; i++){
-        if (corx>cards[i].x && corx<(cards[i].x+size*2)
-        && cory>cards[i].y-size && cory<(cards[i].y+size)){
-            colorCard(i+6);
-            click.play();
-            drawAll();
-            checkSet();
-        }
+            if (ctx.isPointInPath(cards[i].form, corx, cory)) {
+                colorCard(i);
+                drawAll();
+                click.play();
+                checkSet();
+            }
+            /*
+            if (corx>cards[i].x && corx<(cards[i].x+size*2)
+            && cory>cards[i].y-size && cory<(cards[i].y+size)){
+                colorCard(i+6);
+                click.play();
+                drawAll();
+                checkSet();
+            }
+            */
     }
 }
 function drawPoints(){
