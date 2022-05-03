@@ -1,0 +1,17 @@
+Welcome to play a game of Joukko, an online multiplayer pattern recognition game.<br>
+The objective of the game is simple: to find all "collections" of three diamonds spread around the playing field.<br>
+The playing field consist of 81 individually coloured diamonds, of which you can see 9 at any moment. Your player is marked as a circle in the middle of the playing field.
+All diamonds have four quadrants, each having one of three different colours. 
+You can move around on the field with WASD or arrow buttons, or with the arrow buttons displayed when playing with a mobile device. 
+On the right of the playing field your coordinates are shown, note that the playing field is wrapped around
+its y and x axes, meaning that coordinate 0 follows coordinate 8. 
+Diamonds are chosen by clicking on them. You earn one point for each collection found. You lose one point if you chose three diamonds that do not form a collection.<br>
+In addition to your coordinates, right of the playing field is also shown the total amount of collections to be found on the current field, as well as the top 5 players at the moment.<br>
+Determing a collection:<br>
+A collection is correct either if for each quadrant the colours in all of the three chosen diamonds are identical with each other or all colours are different with each other.<br>
+<img src="images/example.png">
+For instance the image above, which is also seen on the starting screen shows three diamonds that form a collection: The upper left and upper right quadrants are 
+all different from each other (green, orange, blue, and blue orange green), whereas the lower left and lower right quadrants are all identical. Note that not each view of 9 cards
+contains a collection. In order to see the amount of collections on the current view, you can click the hint button. You have 3 hints at the beginning of the game. 
+Finding a collection grants you an extra hint, as well as placing in the top 3 of a round.
+A round ends when all collections have been found.

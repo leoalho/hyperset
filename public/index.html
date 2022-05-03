@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JOUKKO</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="shortcut icon" type="image/png" href="images/favicon.png"/>
+</head>
+<body>
+    <div class="login" id="login">
+        <img src="images/example.png" class="example">
+        <div>Welcome to play JOUKKO. Please enter a username and press enter to start playing:</div>
+        <input class="input" id="usernameInput" placeholder="Enter username" type="text" />
+        <div id="players"></div>
+        <div class="buttons">
+        <button class="highscores" id="highScoreButton">Highscores</button>
+        <button id="about" class="about btn"><img src="images/about.png" width="40px" height="40px"></button>
+        </div>
+    </div>
+    <div class="game" id="game"> 
+        <div class = "sidecolumn">
+            <p id="allSets"></p>
+            <p id="coordinate"></p>
+            <p><button class="hint" id="hint">HINT!</button>          
+            <div id="hints"></div></p>
+            <!--<div id="sets" class="sameLine"></div>-->
+        </div>
+        <div class = "middlecolumn"> 
+            <canvas id="myCanvas" class="canvas" tabindex="1">
+            </canvas>
+        </div>
+        <div class = "sidecolumn">
+            <div class="grid-container">
+                <button id="arrowUp" class="arrow up">&#5123</button>
+                <button id="arrowLeft" class="arrow left">&#5130</button>
+                <button id="arrowRight" class="arrow right">&#5125</button>
+                <button id="arrowDown" class="arrow down">&#5121</button>
+            </div>
+            <button id="mute" class="mute btn"><img src = "images/volume.png" width="30px" height="30px"></button>
+            <button  id="unmute" class="unmute btn"><img src = "images/mute.png" width="30px" height="30px"></button>
+            <button id="about2" class="about btn"><img src="images/about.png" width="30px" height="30px"></button>
+            <div id="points" class="points"></div>
+            <div id="highScores"></div>
+        </div>
+    </div>
+    <div class ="info", id="highscorePopup">
+        <div class="infoContainer">
+            <div class="infoButton">
+                <button class="highscorebutton" id="today">Today</button>
+                <button class="highscorebutton" id="month">This month</button>
+                <button class="highscorebutton" id="year">This year</button>
+                <button class="highscorebutton" id="allTime">All time</button>
+                <button class="close btn" id="highscoreClose"><img src="images/cancel.png"  width="30px" height="30px"></button></div>
+            <div class="infoText" id="highscoreText">
+            </div>
+        </div>
+    </div>
+    <div class="info", id="info">
+        <div class="infoContainer">
+            <div class="infoButton">
+                <button class="close btn" id="infoClose"><img src="images/cancel.png"  width="30px" height="30px"></button></div>
+            <div class="infoText" id="infoText">Welcome to play a game of Joukko, an online multiplayer pattern recognition game.<br>
+                The objective of the game is simple: to find all "collections" of three diamonds spread around the playing field.<br>
+                The playing field consist of 81 individually coloured diamonds, of which you can see 9 at any moment. Your player is marked as a circle in the middle of the playing field.
+                All diamonds have four quadrants, each having one of three different colours. 
+                You can move around on the field with WASD or arrow buttons, or with the arrow buttons displayed when playing with a mobile device. 
+                On the right of the playing field your coordinates are shown, note that the playing field is wrapped around
+                its y and x axes, meaning that coordinate 0 follows coordinate 8. 
+                Diamonds are chosen by clicking on them. You earn one point for each collection found. You lose one point if you chose three diamonds that do not form a collection.<br>
+                In addition to your coordinates, right of the playing field is also shown the total amount of collections to be found on the current field, as well as the top 5 players at the moment.<br>
+                <p><b><u>Determing a collection:</b></u><br>
+                A collection is correct either if for each quadrant the colours in all of the three chosen diamonds are identical with each other or all colours are different with each other.<br>
+                <img src="images/example.png" width="100%">
+                For instance the image above, which is also seen on the starting screen shows three diamonds that form a collection: The upper left and upper right quadrants are 
+                all different from each other (green, orange, blue, and blue orange green), whereas the lower left and lower right quadrants are all identical. Note that not each view of 9 cards
+                contains a collection. In order to see the amount of collections on the current view, you can click the hint button. You have 3 hints at the beginning of the game. 
+                Finding a collection grants you an extra hint, as well as placing in the top 3 of a round.
+                A round ends when all collections have been found.</p></div>
+        </div>
+    </div>
+    <script src="utils.js" charset="utf-8"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="main.js" charset="utf-8"></script>
+</body>
+</html>
