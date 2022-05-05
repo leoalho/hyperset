@@ -386,7 +386,7 @@ $("usernameInput").addEventListener("keydown", function(event){
         nickname = $("usernameInput").value;
         socket.emit("addUser", nickname);
         $("login").style.display="none";
-        $("game").style.display="flex";
+        $("game").style.display="grid";
         $("usernameInput").value = "";
     }
 })

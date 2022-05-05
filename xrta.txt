@@ -2,13 +2,14 @@
 - mobiiliystævællisyys
     - kokeile toisenlaisia painikkeita
     - sivun jærjestely paremmaksi
-- muotojen klikkaus tarkemmksi
+- roomit kun useampi pelaaja
 
 - high score buttonit paremmaksi
 - löydä hyvä fontti
 - mieti muita værivaihtoehtoja
 - vihollisten liikkeet eivät ole animoituja
 - Muokkaa näkymää, jos useampi samalla ruudulla
+
 - vaikea moodi
 - yksinpeli
 - private game

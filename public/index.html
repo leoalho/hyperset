@@ -18,7 +18,7 @@
         </div>
     </div>
     <div class="game" id="game"> 
-        <div class = "sidecolumn">
+        <div class = "leftcolumn">
             <p id="allSets"></p>
             <p id="coordinate"></p>
             <p><button class="hint" id="hint">HINT!</button>          
@@ -29,18 +29,18 @@
             <canvas id="myCanvas" class="canvas" tabindex="1">
             </canvas>
         </div>
-        <div class = "sidecolumn">
-            <div class="grid-container">
-                <button id="arrowUp" class="arrow up">&#5123</button>
-                <button id="arrowLeft" class="arrow left">&#5130</button>
-                <button id="arrowRight" class="arrow right">&#5125</button>
-                <button id="arrowDown" class="arrow down">&#5121</button>
-            </div>
+        <div class = "rightcolumn">
             <button id="mute" class="mute btn"><img src = "images/volume.png" width="30px" height="30px"></button>
             <button  id="unmute" class="unmute btn"><img src = "images/mute.png" width="30px" height="30px"></button>
             <button id="about2" class="about btn"><img src="images/about.png" width="30px" height="30px"></button>
             <div id="points" class="points"></div>
             <div id="highScores"></div>
+        </div>
+        <div class="grid-container">
+            &nbsp;&nbsp;&nbsp;<button id="arrowUp" class="arrow up"> &#5123</button><br>
+            <button id="arrowLeft" class="arrow left">&#5130</button>&nbsp;
+            <button id="arrowRight" class="arrow right">&#5125</button><br>
+            &nbsp;&nbsp;&nbsp;<button id="arrowDown" class="arrow down">&#5121</button>
         </div>
     </div>
     <div class ="info", id="highscorePopup">

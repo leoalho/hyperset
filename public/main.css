@@ -47,22 +47,25 @@ html, body {
 .game {
   font-size: 20px;
   display: none;
-
-  width: 980px;
   margin: auto;
+  grid-template-areas: "left middle right";
 }
 .middlecolumn{
   width: 600px;
   align-items: center;
+  grid-area: middle;
 }
-.sidecolumn{
-  width: 200px;
+.rightcolumn{
+  /*width: 200px;*/
   margin: 20px;
   flex-shrink: 0;
+  grid-area: right;
 }
 .leftcolumn{
-  width: 200px;
+  /*width: 200px;*/
   margin: 20px;
+  flex-shrink: 0;
+  grid-area: left;
 }
 .hint{
   width:100px;
@@ -110,14 +113,16 @@ html, body {
 .right{grid-area: c;}
 .down{grid-area: d;}
 
+.grid-container{
+  display: none;
+  font-size: 40px;
+}
+
 .arrow {
     cursor: pointer;
     border: 0px;
     background: none;
-    font-size: 100px;
-    width: 105px;
-    height: 105px;
-    display: none;
+    font-size: 50px;
 }
 
 @media (max-width:741px){
@@ -127,39 +132,43 @@ html, body {
 }
 
 @media (hover: none) {
-  .arrow{
-    display: inline;
-  }
-  .game{
-    flex-direction: column;
-    flex-wrap: nowrap;
-  }
-  .middlecolumn{
-    margin:auto;
 
-  }
-  .sidecolumn{
-    margin:auto;
-  }
-  body {
-    font-size:50px;
-  }
-  .mute{
-    font-size: 50px;
-  }
-  .unmute{
-    font-size: 50px;
-  }
-}
-.grid-container {
-    margin: auto;
-    width: 315px;
-    display: grid;
+  .game{
+    width: 600px;
     grid-template-areas:
+      "middle middle middle"
+      "left arrow right";
+  }
+  .grid-container {
+ 
+    display: block;
+    grid-area: "arrow";
+    /*grid-template-areas:
         ". a ."
         "b . c"
         ". d .";
+    */
 }
+  .middlecolumn{
+    display: flex;
+    justify-content: center;
+    width: 100%
+  }
+
+  .leftcolumn{
+
+  }
+  .rightcolumn{
+    margin: 0px;
+  }
+  .mute{
+    font-size: 20px;
+  }
+  .unmute{
+    font-size: 20px;
+  }
+}
+
 
 .info{
   display: none;
