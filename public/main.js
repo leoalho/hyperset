@@ -1,25 +1,29 @@
+//import * as arrows from "./buttons.js";
 var socket = io();
 var canvas = $("myCanvas");
 var ctx = canvas.getContext("2d");
-
-canvas.width = 600;
+canvas.width = Math.min(document.documentElement.clientWidth, 600);
 canvas.height = canvas.width;
-width = canvas.width;
-height = canvas.height;
-clearance = width/40 //the distance between two diamonds
-size = 3*width/20 //half the diameter of a single diamond
+var width = canvas.width;
+var height = canvas.height;
+var clearance = width/40 //the distance between two diamonds
+var size = 3*width/20 //half the diameter of a single diamond
 ctx.lineWidth = Math.ceil(width/300);
+var canvas2 = $("canvas2");
+var ctx2 = canvas2.getContext("2d");
+canvas2.width = 200;
+canvas2.height = 200;
 var movement = (size*2+clearance*2)/10;
-fontSize = canvas.height/10;
-colors = ["#00eaff", "#ff9500","#a8ff36","#8c8c8c"]
-cards = [{x:clearance, y:clearance+size, color: "black"}   ,{x:clearance*2+size*2,y:clearance+size, color: "black"}    ,{x:clearance*3+size*4,y:clearance+size, color: "black"}    ,{x:clearance*4+size*6,y:clearance+size, color: "black"},{x:clearance*5+size*8,y:clearance+size, color: "black"},
+var fontSize = canvas.height/10;
+const colors = ["#00eaff", "#ff9500","#a8ff36","#8c8c8c"]
+var cards = [{x:clearance, y:clearance+size, color: "black"}   ,{x:clearance*2+size*2,y:clearance+size, color: "black"}    ,{x:clearance*3+size*4,y:clearance+size, color: "black"}    ,{x:clearance*4+size*6,y:clearance+size, color: "black"},{x:clearance*5+size*8,y:clearance+size, color: "black"},
          {x:clearance,y:clearance*2+size*3, color: "black"},{x:clearance*2+size*2,y:clearance*2+size*3, color: "black"},{x:clearance*3+size*4,y:clearance*2+size*3, color: "black"},{x:clearance*4+size*6,y:clearance*2+size*3, color: "black"},{x:clearance*5+size*8,y:clearance*2+size*3, color: "black"},
          {x:clearance,y:clearance*3+size*5, color: "black"},{x:clearance*2+size*2,y:clearance*3+size*5, color: "black"},{x:clearance*3+size*4,y:clearance*3+size*5, color: "black"},{x:clearance*4+size*6,y:clearance*3+size*5, color: "black"},{x:clearance*5+size*8,y:clearance*3+size*5, color: "black"},
          {x:clearance,y:clearance*4+size*7, color: "black"},{x:clearance*2+size*2,y:clearance*4+size*7, color: "black"},{x:clearance*3+size*4,y:clearance*4+size*7, color: "black"},{x:clearance*4+size*6,y:clearance*4+size*7, color: "black"},{x:clearance*5+size*8,y:clearance*4+size*7, color: "black"},
          {x:clearance,y:clearance*5+size*9, color: "black"},{x:clearance*2+size*2,y:clearance*5+size*9, color: "black"},{x:clearance*3+size*4,y:clearance*5+size*9, color: "black"},{x:clearance*4+size*6,y:clearance*5+size*9, color: "black"},{x:clearance*5+size*8,y:clearance*5+size*9, color: "black"}]
         //locations of all of the diamonds on the canvas
-playerPosition = [0,0]; 
-locations = [[-1,-1],[0,-1],[1,-1],[-1,0],[0,0],[1,0],[-1,1],[0,1],[1,1]] //if needed to loop the nine cards around the current player
+var playerPosition = [0,0]; 
+const locations = [[-1,-1],[0,-1],[1,-1],[-1,0],[0,0],[1,0],[-1,1],[0,1],[1,1]] //if needed to loop the nine cards around the current player
 var playerx = 0 //your x coordinate
 var playery = 0 //your y coordinate
 var yourid; //your socket id
@@ -38,11 +42,24 @@ var highscoresToday = [];
 var highscoresThisMonth = [];
 var highscoresThisYear = [];
 var highscoresAllTime = [];
+var arrowButtons = [];
 
-var click = new Audio("sounds/click.mp3");
-var fail = new Audio("sounds/fail.mp3");
-var success = new Audio("sounds/success.mp3");
-sounds = [click, fail, success];
+const click = new Audio("sounds/click.mp3");
+const fail = new Audio("sounds/fail.mp3");
+const success = new Audio("sounds/success.mp3");
+const sounds = [click, fail, success];
+
+function getColor(){
+    for (let i=0; i<players.length;i++){
+        if (players[i].id==yourid){
+            color = players[i].color;
+        }
+    }
+}
+
+arrowButtons = createArrows(45);
+drawArrows();
+canvas2.addEventListener("click", buttonClick); 
 
 function comparePoints(a,b){
     if (a.gamepoints == b.gamepoints){
@@ -52,7 +69,7 @@ function comparePoints(a,b){
 }
 
 function InitRhomboidEdges(index){
-    path1 = new Path2D();
+    let path1 = new Path2D();
     x = cards[index].x;
     y = cards[index].y;
     path1.moveTo(x,y);
@@ -138,7 +155,7 @@ function drawBoard(x,y){
         for (let j=-2; j<3; j++){
             var a = (x+j+9)%9;
             var b = (y+i+9)%9;
-            currentCard = board[a][b];
+            var currentCard = board[a][b];
             var boardPosition = cards[cardCounter];
             drawRhomboid(colors[currentCard.shape[0]], colors[currentCard.shape[1]], colors[currentCard.shape[2]], colors[currentCard.shape[3]], boardPosition.x, boardPosition.y, cards[cardCounter].color);
             ctx.strokeStyle = boardPosition.color;
@@ -172,25 +189,25 @@ function drawAllPlayers(){
                 continue;}
 
             if (Math.abs(playerPosition[0]-players[i].corx)<3){
-                differencex = -playerPosition[0]+players[i][2];
+                differencex = -playerPosition[0]+players[i].corx;
             }else if (playerPosition[0]==7 && players[i].corx==0){
                 differencex=2;
             }else if (playerPosition[0]==8 && players[i].corx<2){
-                differencex=players[i][2]+1;
+                differencex=players[i].corx+1;
             }else if (playerPosition[0]==0 && players[i].corx>6){
-                differencex=players[i][2]-9;
+                differencex=players[i].corx-9;
             }else if (playerPosition[0]==1 && players[i].corx ==8){
                 differencex=-2;
             }
             
             if (Math.abs(playerPosition[1]-players[i].cory)<3){
-                differencey = players[i][3]-playerPosition[1];
+                differencey = players[i].cory-playerPosition[1];
             }else if (playerPosition[1]==7 && players[i].cory==0){
                 differencey=2;
             }else if (playerPosition[1]==8 && players[i].cory<2){
-                differencey=players[i][3]+1;
+                differencey=players[i].cory+1;
             }else if (playerPosition[1]==0 && players[i].cory>6){
-                differencey=players[i][3]-9;
+                differencey=players[i].cory-9;
             }else if (playerPosition[1]==1 && players[i].cory==8){
                 differencey=-2;
             }
@@ -203,9 +220,8 @@ function drawAllPlayers(){
 }
 function drawAll(){    
     drawBoard(playerPosition[0],playerPosition[1]);
-    drawYou();
     drawAllPlayers();
-    
+    drawYou();    
 }
 function displayText(display){
     ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
@@ -390,42 +406,6 @@ $("usernameInput").addEventListener("keydown", function(event){
         $("usernameInput").value = "";
     }
 })
-$("arrowDown").addEventListener("click", ()=>{
-   if (!moving){
-        moving=true;
-        resetColors();
-        mover = setInterval(()=>{
-            move(0,movement,0,1);
-        },50)
-   }
-})
-$("arrowUp").addEventListener("click", ()=>{
-    if (!moving){
-        moving=true;
-        resetColors();
-        mover = setInterval(()=>{
-            move(0,-movement,0,-1);
-        },50)   
-    }
-})
-$("arrowLeft").addEventListener("click", ()=>{
-    if (!moving){
-        moving=true;
-        resetColors();
-        mover = setInterval(()=>{
-            move(-movement,0,-1,0);
-        },50) 
-    }
-})
-$("arrowRight").addEventListener("click", ()=>{
-    if (!moving){
-        moving=true;
-        resetColors();
-        mover = setInterval(()=>{
-            move(movement,0,1,0);
-        },50);
-    }   
-})
 $("mute").addEventListener("click", () =>{
     for (let i=0; i<sounds.length; i++){
         sounds[i].muted = true;
@@ -508,7 +488,8 @@ socket.on("players", (users)=>{
 socket.on("updatePlayers", (users) =>{
     players = JSON.parse(users);
     $("players").innerText="Players online: "+players.length;
-    drawBoard(playerPosition[0],playerPosition[1]); 
+    drawBoard(playerPosition[0],playerPosition[1]);
+    drawArrows(); 
     drawAllPlayers(); 
     drawYou();
     drawPoints();
