@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" 
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>JOUKKO</title>
     <link rel="stylesheet" href="main.css">
     <link rel="shortcut icon" type="image/png" href="images/favicon.png"/>
@@ -36,12 +38,7 @@
             <div id="points" class="points"></div>
             <div id="highScores"></div>
         </div>
-        <div class="grid-container">
-            &nbsp;&nbsp;&nbsp;<button id="arrowUp" class="arrow up"> &#5123</button><br>
-            <button id="arrowLeft" class="arrow left">&#5130</button>&nbsp;
-            <button id="arrowRight" class="arrow right">&#5125</button><br>
-            &nbsp;&nbsp;&nbsp;<button id="arrowDown" class="arrow down">&#5121</button>
-        </div>
+        <canvas id="canvas2" class="canvas2"></canvas>
     </div>
     <div class ="info", id="highscorePopup">
         <div class="infoContainer">
@@ -78,6 +75,7 @@
                 A round ends when all collections have been found.</p></div>
         </div>
     </div>
+    <script src="buttons.js" charset="utf-8"></script>
     <script src="utils.js" charset="utf-8"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="main.js" charset="utf-8"></script>

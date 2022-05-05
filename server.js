@@ -282,6 +282,7 @@ server.listen(port, hostname, ()=> {
 io.on("connection", (socket) => {
     console.log(socket.id +" connected. Users online: "+io.engine.clientsCount);
     socket.emit("players", JSON.stringify(users));
+    
     socket.on("location", (x,y) =>{
         for(let i=0; i<users.length;i++){
             if (socket.id==users[i].id){
