@@ -370,7 +370,6 @@ io.on("connection", (socket) => {
     })
     socket.on("disconnect", () => {
         console.log(socket.id +" disconnected. Users online: "+ io.engine.clientsCount)
-        console.table(users);
         for(let i=0; i<users.length;i++){
             if (socket.id==users[i].id){
                 users.splice(i,1);
