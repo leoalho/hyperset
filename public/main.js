@@ -485,9 +485,12 @@ socket.on("players", (users)=>{
     players = JSON.parse(users);
     $("players").innerText="Players online: "+players.length;
 })
+socket.on("players2", (users)=>{
+    $("players").innerText="Players online: "+users;
+})
 socket.on("updatePlayers", (users) =>{
     players = JSON.parse(users);
-    $("players").innerText="Players online: "+players.length;
+//    $("players").innerText="Players online: "+players.length;
     drawBoard(playerPosition[0],playerPosition[1]);
     drawArrows(); 
     drawAllPlayers(); 

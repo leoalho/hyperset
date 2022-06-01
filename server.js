@@ -3,8 +3,8 @@ const http          = require("http");
 const express       = require("express");
 const socketIO      = require("socket.io");
 const { MongoClient } = require("mongodb");
-const { set } = require("express/lib/application");
-const { equal } = require("assert");
+//const { set } = require("express/lib/application");
+//sconst { equal } = require("assert");
 
 const uri = "mongodb://localhost:27017";
 const client = new MongoClient(uri);
@@ -265,7 +265,7 @@ async function highscoresAllTime(n){
 
 const publicPath    = path.join(__dirname, "/public");
 const port          = 3000;
-const hostname      = "192.168.0.3";
+const hostname      = "192.168.10.122";
 let app             = express();
 let server          = http.createServer(app);
 let io              = socketIO(server);

@@ -41,6 +41,7 @@ html, body {
   align-items: center;
 }
 .highscores{
+  margin: 5px;
   font-size: 20px;
   border: 2px solid black;
   cursor: pointer;
