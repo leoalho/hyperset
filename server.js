@@ -218,7 +218,7 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         console.log(socket.id +" disconnected. Users online: "+ io.engine.clientsCount)
         
-        if (games.length==0){
+        if (games[0].users.length==0){
             return;
         }
         for(let i=0; i<games[socket.roomNumber].users.length;i++){
