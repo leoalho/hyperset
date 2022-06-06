@@ -85,7 +85,7 @@ async function highscoresAllTime(n){
 
 const publicPath    = path.join(__dirname, "/public");
 const port          = 80;
-const hostname      = "192.168.0.3";
+const hostname      = "109.204.232.168";
 let app             = express();
 let server          = http.createServer(app);
 let io              = socketIO(server);
