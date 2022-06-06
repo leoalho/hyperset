@@ -11,9 +11,6 @@ const client = new MongoClient(uri);
 const database = client.db('testi');
 const highscores = database.collection('highscores');
 
-const locations = [[-1,-1],[0,-1],[1,-1],[-1,0],[0,0],[1,0],[-1,1],[0,1],[1,1]];
-var online          = 0;
-
 async function addUser(id, nickname){
     await highscores.insertOne({_id:id, name: nickname, points: 0, startedPlaying: new Date()})
 }
@@ -221,7 +218,7 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         console.log(socket.id +" disconnected. Users online: "+ io.engine.clientsCount)
         
-        if (io.engine.clientsCount==0){
+        if (games.length==0){
             return;
         }
         for(let i=0; i<games[socket.roomNumber].users.length;i++){
