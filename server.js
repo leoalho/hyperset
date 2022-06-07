@@ -151,7 +151,9 @@ io.on("connection", (socket) => {
 
         games[socket.roomNumber].users.push({id:socket.id, name:userName, color:socket.color, corx:x,cory:y, gamepoints:0, totalpoints:0, created: new Date(), roomNumber: roomNumber})
         addUser(socket.id, userName);
+        console.log("");
         console.log(socket.id + " started playing as "+ socket.userName + " in room " + socket.room);
+        console.log("");
         console.log("GAME STATUS:");
         console.log("------------------------------------------")
         games.forEach(e => {
@@ -219,7 +221,9 @@ io.on("connection", (socket) => {
             var hiScoresAllTime = await highscoresAllTime(5);
             socket.emit("set", true);
             io.emit("updateHighScores", JSON.stringify(hiScoresToday), JSON.stringify(hiScoresAllTime))
+            console.log("");
             console.log("Joukko found in "+socket.room);
+            console.log("");
             console.log("GAME STATUS:")
             console.log("------------------------------------------")
             games.forEach(e => {
