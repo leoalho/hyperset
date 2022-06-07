@@ -401,7 +401,7 @@ $("usernameInput").addEventListener("keydown", function(event){
             return;
         }
         nickname = $("usernameInput").value;
-        if (nickname.length<20){
+        if (nickname.length>20){
             alert("Please choose a shorter username (<20 charaacters)")
             $("usernameInput").value = "";
             return;
