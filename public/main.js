@@ -396,10 +396,16 @@ canvas.addEventListener("click", cursorLocation);
 $("usernameInput").addEventListener("keydown", function(event){
     if (event.key === "Enter"){
         if (!socket.connected){
-            alert("Server not found :(")
+            alert("Server not online :(")
+            $("usernameInput").value = "";
             return;
         }
         nickname = $("usernameInput").value;
+        if (nickname.length<20){
+            alert("Please choose a shorter username (<20 charaacters)")
+            $("usernameInput").value = "";
+            return;
+        }
         socket.emit("addUser", nickname);
         $("login").style.display="none";
         $("game").style.display="grid";

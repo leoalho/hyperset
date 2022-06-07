@@ -98,9 +98,6 @@ function timer(game){
   }
 }
 
-
-
-
 const publicPath    = path.join(__dirname, "/public");
 const port          = 80;
 const hostname      = "109.204.232.168";
@@ -144,6 +141,9 @@ io.on("connection", (socket) => {
     socket.on("addUser", async (userName)=>{
         findRoom();
         socket.join(room);
+        for (let i=0; i++; i<games.length){
+            console.log(`$(games[i].room) players: $(games[i].users.length) joukkos left: $(games[i].sets)`)
+        }
         socket.room = room;
         socket.roomNumber = roomNumber;
 
