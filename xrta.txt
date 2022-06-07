@@ -1,6 +1,5 @@
 - profanity filter nicknameille
 
-
 - high score buttonit paremmaksi
 - löydä hyvä fontti
 - mieti muita värivaihtoehtoja
