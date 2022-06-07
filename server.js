@@ -80,7 +80,25 @@ async function highscoresThisYear(n){
 async function highscoresAllTime(n){
     const top10 = await highscores.find().sort({points:-1, startedPlaying:1}).limit(n).toArray()
     return top10;
-} 
+}
+
+function timer(game){
+    // a 10 second timer, prints the remaining time every .1s. Reduces a point and clears the board if the time runs out.
+    io.to(game.room).emit("gameOver", game.counter);
+    game.counter --;
+  if (game.counter < 0)
+  {
+    clearInterval(game.mover);
+    game.counter = 10;
+    game.newGame();
+    io.to(game.room).emit("mayMove");
+    io.to(game.room).emit("updateBoard", JSON.stringify(game.board));
+    io.to(game.room).emit("updatePlayers", JSON.stringify(game.users));
+    io.to(game.room).emit("allSets", game.sets);
+  }
+}
+
+
 
 
 const publicPath    = path.join(__dirname, "/public");
@@ -197,7 +215,7 @@ io.on("connection", (socket) => {
             socket.emit("set", true);
             io.emit("updateHighScores", JSON.stringify(hiScoresToday), JSON.stringify(hiScoresAllTime))
             if (currentRoom.sets == 0){
-                currentRoom.mover = setInterval(currentRoom.timer,1000);
+                currentRoom.mover = setInterval(timer,1000,currentRoom);
                 return;}
             return;
         }
