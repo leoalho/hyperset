@@ -151,7 +151,6 @@ io.on("connection", (socket) => {
 
         games[socket.roomNumber].users.push({id:socket.id, name:userName, color:socket.color, corx:x,cory:y, gamepoints:0, totalpoints:0, created: new Date(), roomNumber: roomNumber})
         addUser(socket.id, userName);
-        console.log(games[socket.roomNumber].users.length);
         for (let i=0; i++; i<games.length){
             console.log(games[i].room + " players: " + games[i].users.length + " joukkos left: " + games[i].sets);
         }
