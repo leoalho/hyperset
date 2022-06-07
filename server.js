@@ -151,9 +151,11 @@ io.on("connection", (socket) => {
 
         games[socket.roomNumber].users.push({id:socket.id, name:userName, color:socket.color, corx:x,cory:y, gamepoints:0, totalpoints:0, created: new Date(), roomNumber: roomNumber})
         addUser(socket.id, userName);
+        console.log("------------------------------------------")
         games.forEach(e => {
             console.log(e.room + " players: " + e.users.length + " joukkos left: " + e.sets);
         })
+        console.log("------------------------------------------")
 
         socket.emit("initBoard", JSON.stringify(games[socket.roomNumber].board), socket.id, socket.color, x ,y, JSON.stringify(games[socket.roomNumber].users));
         socket.emit("allSets", games[socket.roomNumber].sets);
@@ -215,6 +217,13 @@ io.on("connection", (socket) => {
             var hiScoresAllTime = await highscoresAllTime(5);
             socket.emit("set", true);
             io.emit("updateHighScores", JSON.stringify(hiScoresToday), JSON.stringify(hiScoresAllTime))
+
+            console.log("------------------------------------------")
+            games.forEach(e => {
+                console.log(e.room + " players: " + e.users.length + " joukkos left: " + e.sets);
+            })
+            console.log("------------------------------------------")
+            
             if (currentRoom.sets == 0){
                 currentRoom.mover = setInterval(timer,1000,currentRoom);
                 return;}
