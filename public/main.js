@@ -9,10 +9,12 @@ var height = canvas.height;
 var clearance = width/40 //the distance between two diamonds
 var size = 3*width/20 //half the diameter of a single diamond
 ctx.lineWidth = Math.ceil(width/300);
+
 var canvas2 = $("canvas2");
 var ctx2 = canvas2.getContext("2d");
 canvas2.width = 200;
 canvas2.height = 200;
+
 var movement = (size*2+clearance*2)/10;
 var fontSize = canvas.height/10;
 const colors = ["#00eaff", "#ff9500","#a8ff36","#8c8c8c"]
