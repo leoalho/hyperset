@@ -85,12 +85,4 @@ function createArrows(size){
     return arrows;
 }
 
-function drawArrows(){
-    arrowButtons.forEach(element => {
-        ctx2.fillStyle = playerColor;
-        ctx2.fill(element);
-        ctx2.stroke(element);
-    });
-}
-
-//export {createLeftButton,createRightButton,createDownButton,createUpButton,buttonClick, createArrows, drawArrows};
+export {createLeftButton,createRightButton,createDownButton,createUpButton,buttonClick, createArrows};

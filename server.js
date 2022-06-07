@@ -100,7 +100,8 @@ function timer(game){
 
 const publicPath    = path.join(__dirname, "/public");
 const port          = 80;
-const hostname      = "109.204.232.168";
+//const hostname      = "109.204.232.168";
+const hostname      = "192.168.0.3";
 let app             = express();
 let server          = http.createServer(app);
 let io              = socketIO(server);
@@ -137,6 +138,7 @@ server.listen(port, hostname, ()=> {
 io.on("connection", (socket) => {
     console.log(socket.id +" connected. Users online: "+io.engine.clientsCount);
     socket.emit("players2", io.engine.clientsCount);
+    socket.roomNumber = 999;
 
     socket.on("addUser", async (userName)=>{
         findRoom();
@@ -253,9 +255,10 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         console.log(socket.id +" disconnected. Users online: "+ io.engine.clientsCount)
         
-        if (games[0].users.length==0){
+        if (socket.roomNumber == 999){
             return;
         }
+
         for(let i=0; i<games[socket.roomNumber].users.length;i++){
             if (socket.id==games[socket.roomNumber].users[i].id){
                 games[socket.roomNumber].users.splice(i,1);

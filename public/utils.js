@@ -23,3 +23,12 @@ const shuffleArray = array => {
       array[j] = temp;
     }
 }
+
+function comparePoints(a,b){
+  if (a.gamepoints == b.gamepoints){
+      return a.created-b.created
+  }
+  return b.gamepoints-a.gamepoints
+}
+
+export{$, equalArrays, randomColor, shuffleArray, comparePoints};
