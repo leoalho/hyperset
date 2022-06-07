@@ -141,9 +141,6 @@ io.on("connection", (socket) => {
     socket.on("addUser", async (userName)=>{
         findRoom();
         socket.join(room);
-        for (let i=0; i++; i<games.length){
-            console.log(`$(games[i].room) players: $(games[i].users.length) joukkos left: $(games[i].sets)`)
-        }
         socket.room = room;
         socket.roomNumber = roomNumber;
 
@@ -154,6 +151,9 @@ io.on("connection", (socket) => {
 
         games[socket.roomNumber].users.push({id:socket.id, name:userName, color:socket.color, corx:x,cory:y, gamepoints:0, totalpoints:0, created: new Date(), roomNumber: roomNumber})
         addUser(socket.id, userName);
+        for (let i=0; i++; i<games.length){
+            console.log(`$(games[i].room) players: $(games[i].users.length) joukkos left: $(games[i].sets)`)
+        }
         socket.emit("initBoard", JSON.stringify(games[socket.roomNumber].board), socket.id, socket.color, x ,y, JSON.stringify(games[socket.roomNumber].users));
         socket.emit("allSets", games[socket.roomNumber].sets);
 

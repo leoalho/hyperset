@@ -1,4 +1,4 @@
-- roomit kun useampi pelaaja
+- profanity filter nicknameille
 
 - high score buttonit paremmaksi
 - löydä hyvä fontti
