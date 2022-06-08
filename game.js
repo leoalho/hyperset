@@ -52,7 +52,7 @@ class game{
     gameSets(){
         this.setsfound = [];
         this.iterateField();
-        // console.table(this.setsfound);
+        console.table(this.setsfound);
         return this.setsfound.length;
     }
     createDeck(){

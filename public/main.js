@@ -128,7 +128,7 @@ function drawPoints(){
 
     var playerPoints = "<p><u>Your points</u><br>This game: "+player.points+"<br> In total: "+player.pointsTotal+ "</p><p><u>Top 5 players<br> This round: </u><br>";
     players.sort(comparePoints);
-    for (let i=0; i<players.length; i++){
+    for (let i=0; i<Math.min(5,players.length); i++){
         playerPoints += players[i].name+": "+players[i].gamepoints+", <br>";
     }
     playerPoints += "<u>Today:</u><br>";
@@ -190,6 +190,9 @@ $("usernameInput").addEventListener("keydown", function(event){
         if (nickname.length>20){
             alert("Please choose a shorter username (<20 charaacters)")
             $("usernameInput").value = "";
+            return;
+        }
+        if (nickname.length==0){
             return;
         }
         socket.emit("addUser", nickname);
@@ -320,7 +323,7 @@ socket.on("allSets", (sets) =>{
 socket.on("gameOver", (timeLeft) =>{
     player.points = 0;
     player.moving = true;
-    area.gameOver(timeLeft);
+    area.gameOver(timeLeft, players);
 })
 socket.on("mayMove",()=>{
     player.moving = false;

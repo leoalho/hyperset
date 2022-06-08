@@ -182,18 +182,18 @@ export class Area{
         this.drawAllPlayers(players);
         this.drawYou();  
     }
-    gameOver(timeLeft){
-        this.drawAll();
+    gameOver(timeLeft, players){
+        this.drawAll(players);
         this.ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-        this.ctx.fillRect(clearance+size*2, clearance+size*2, width, height);
+        this.ctx.fillRect(this.clearance+this.size*2, this.clearance+this.size*2, this.width, this.height);
         this.ctx.fillStyle = "#000000";
-        this.ctx.font = fontSize +"px Arial";
+        this.ctx.font = this.fontSize +"px Arial";
         var a = "GAME OVER"
-        textWidtha = this.ctx.measureText(a).width;
+        var textWidtha = this.ctx.measureText(a).width;
         var b = "NEW GAME IN"
-        textWidthb = this.ctx.measureText(b).width;
+        var textWidthb = this.ctx.measureText(b).width;
         var c = timeLeft.toString();
-        textWidthc = this.ctx.measureText(c).width;
+        var textWidthc = this.ctx.measureText(c).width;
         this.ctx.fillText(a, this.width/2-textWidtha/2+this.clearance+this.size*2, this.height/2-this.fontSize*0.5+this.clearance+this.size*2);
         this.ctx.fillText(b, this.width/2-textWidthb/2+this.clearance+this.size*2, this.height/2+this.fontSize*0.5+this.clearance+this.size*2)
         this.ctx.fillText(c, this.width/2-textWidthc/2+this.clearance+this.size*2, this.height/2+this.fontSize*1.5+this.clearance+this.size*2);
