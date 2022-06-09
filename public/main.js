@@ -1,20 +1,12 @@
-import {createLeftButton,createRightButton,createDownButton,createUpButton,buttonClick, createArrows} from "./buttons.js";
+import {arrowarea} from "./buttons.js";
 import {$, equalArrays, randomColor, shuffleArray, comparePoints} from "./utils.js"
 import {Area} from "./board.js";
 import {player} from "./player.js";
 
 var socket = io();
 
-var canvas = $("myCanvas");
-canvas.width = Math.min(document.documentElement.clientWidth, 600);
-canvas.height = canvas.width;
-
-var canvas2 = $("canvas2");
-var ctx2 = canvas2.getContext("2d");
-canvas2.width = 200;
-canvas2.height = 200;
-
-var area = new Area(canvas);
+var area = new Area();
+var area2;
 
 var players; //list of players
 var mover; //used for animation
@@ -24,54 +16,16 @@ var highscoresToday = [];
 var highscoresThisMonth = [];
 var highscoresThisYear = [];
 var highscoresAllTime = [];
-var arrowButtons = [];
 
 const click = new Audio("sounds/click.mp3");
 const fail = new Audio("sounds/fail.mp3");
 const success = new Audio("sounds/success.mp3");
 const sounds = [click, fail, success];
 
-function drawArrows(){
-    arrowButtons.forEach(element => {
-        ctx2.fillStyle = player.color;
-        ctx2.fill(element);
-        ctx2.stroke(element);
-    });
-}
-
-arrowButtons = createArrows(45);
-drawArrows();
-canvas2.addEventListener("click", buttonClick); 
-
-function colorCard(i){ 
-    var x = player.position[0]+i%5-2;
-    x = (x+9)%9;
-    var y = player.position[1]+Math.floor(i/5)-2;
-    y = (y+9)%9;
-    var coord = [x,y]
-    if (area.board[x][y].shape[0]==3){return;}
-    if (area.cards[i].color=="black"){
-        player.cardsChosen.push([x,y]);
-        area.cards[i].color=player.color;
-    }else{
-        area.cards[i].color="black";
-        for (let j=0; j<player.cardsChosen.length; j++){
-            if (equalArrays([x,y],player.cardsChosen[j])){
-                player.cardsChosen.splice(j,1);
-            }
-        }
-    }
-}
 function move(movex,movey,posx,posy){
-    area.ctx.save();
     player.x += movex;
     player.y += movey;
-    area.ctx.clearRect(area.clearance+area.size*2, area.clearance*1+area.size*2, area.width, area.height);
-    area.ctx.translate(-player.x,-player.y);
-    area.drawBoard();
-    area.drawAllPlayers(players);
-    area.ctx.restore();
-    area.drawYou();
+    area.move(players);
     counter--;
     if (counter == 0){
         counter = 10;
@@ -83,15 +37,34 @@ function move(movex,movey,posx,posy){
         player.position[0] =(player.position[0]+posx+9)%9;
         player.position[1] =(player.position[1]+posy+9)%9;
 
-        area.drawBoard();
-        area.drawAllPlayers(players);
-        area.drawYou(); 
+        area.drawAll(players);
         area.boardSets();
 
         socket.emit("location", player.position[0], player.position[1]);
-        $("coordinate").innerText = "Your position: "+player.position;
-       
+        $("coordinate").innerText = "Your position: "+player.position;       
     }    
+}
+function moveOther(diffx, diffy, otherColor, index){
+    area.drawBoard();
+    area.drawPlayer(area.cards[index].x+area.size+diffx, area.cards[index].y+diffy, otherColor);
+    area.drawYou();
+    counter--;
+    if (counter == 0){
+        counter = 10;
+        clearInterval(mover);
+    }
+}
+function movePlayer(id, oldx, oldy, x, y, index){
+    counter = 10;
+    var diffx = oldx-x;
+    var diffy = oldy-y;
+    var otherColor;
+    for (var i; i<players.length; i++){
+        if (id==players[i]){
+            otherColor = players[i].color;
+        }
+    }
+    mover = setInterval(()=>{moveOther(diffx, diffy, otherColor, index)},50);
 }
 function checkSet(){
     if (player.cardsChosen.length==3){
@@ -100,32 +73,21 @@ function checkSet(){
         player.cardsChosen = [];
     }
 }
-
 function cursorLocation(e){
     //changes the color of the card clicked adds or removes that card to the cardsChosen Array
-    let rect = canvas.getBoundingClientRect();
+    let rect = area.canvas.getBoundingClientRect();
     let corx = e.clientX - rect.left;
     let cory = e.clientY - rect.top;
     for (let i=0; i<24; i++){
-            if (area.ctx.isPointInPath(area.cards[i].form, corx, cory)) {
-                colorCard(i);
-                area.drawAll(players);
-                click.play();
-                checkSet();
-            }
-            /*
-            if (corx>cards[i].x && corx<(cards[i].x+size*2)
-            && cory>cards[i].y-size && cory<(cards[i].y+size)){
-                colorCard(i+6);
-                click.play();
-                drawAll();
-                checkSet();
-            }
-            */
+        if (area.ctx.isPointInPath(area.cards[i].form, corx, cory)) {
+            area.colorCard(i);
+            area.drawAll(players);
+            click.play();
+            checkSet();
+        }
     }
 }
 function drawPoints(){
-
     var playerPoints = "<p><u>Your points</u><br>This game: "+player.points+"<br> In total: "+player.pointsTotal+ "</p><p><u>Top 5 players<br> This round: </u><br>";
     players.sort(comparePoints);
     for (let i=0; i<Math.min(5,players.length); i++){
@@ -142,42 +104,73 @@ function drawPoints(){
     playerPoints += "</p>";
     $("points").innerHTML = playerPoints;
 }
-canvas.addEventListener("keydown", function(event){
-    
+function moveUp(){
+    player.moving=true;
+    area.resetColors();
+    player.cardsChosen = [];
+    mover = setInterval(()=>{
+        move(0,-area.movement,0,-1);
+    },50)
+}
+function moveDown(){
+    player.moving=true;
+    area.resetColors();
+    player.cardsChosen = [];
+    mover = setInterval(()=>{
+        move(0,area.movement,0,1);
+    },50)
+}
+function moveLeft(){
+    player.moving=true;
+    area.resetColors();
+    player.cardsChosen = [];
+    mover = setInterval(()=>{
+        move(-area.movement,0,-1,0);
+    },50)
+}
+function moveRight(){
+    player.moving=true;
+    area.resetColors();
+    player.cardsChosen = [];
+    mover = setInterval(()=>{
+        move(area.movement,0,1,0);
+    },50);
+}
+area.canvas.addEventListener("keydown", function(event){
     if (event.code==="ArrowDown" && !player.moving){
-        player.moving=true;
-        area.resetColors();
-        player.cardsChosen = [];
-        mover = setInterval(()=>{
-            move(0,area.movement,0,1);
-        },50)
+        moveDown();
     }
     if (event.code==="ArrowUp" && !player.moving){
-        player.moving=true;
-        area.resetColors();
-        player.cardsChosen = [];
-        mover = setInterval(()=>{
-            move(0,-area.movement,0,-1);
-        },50)
+        moveUp();
     }
     if (event.code==="ArrowLeft" && !player.moving){
-        player.moving=true;
-        area.resetColors();
-        player.cardsChosen = [];
-        mover = setInterval(()=>{
-            move(-area.movement,0,-1,0);
-        },50)
+        moveLeft();
     }
     if (event.code==="ArrowRight" && !player.moving){
-        player.moving=true;
-        area.resetColors();
-        player.cardsChosen = [];
-        mover = setInterval(()=>{
-            move(area.movement,0,1,0);
-        },50);
+        moveRight();
     }
 })
-canvas.addEventListener("click", cursorLocation);
+area.canvas.addEventListener("click", cursorLocation);
+
+function buttonClick(e){
+    let rect = area2.canvas.getBoundingClientRect();
+    let corx = e.clientX - rect.left;
+    let cory = e.clientY - rect.top;
+    if (!player.moving){
+        if (area2.ctx.isPointInPath(area2.arrows[0], corx, cory)) {
+            moveDown();         
+        }
+        if (area2.ctx.isPointInPath(area2.arrows[1], corx, cory)) {
+            moveUp();
+        }
+        if (area2.ctx.isPointInPath(area2.arrows[2], corx, cory)) {
+            moveLeft();
+        }
+        if (area2.ctx.isPointInPath(area2.arrows[3], corx, cory)) {
+            moveRight();
+        }
+    }
+}
 
 $("usernameInput").addEventListener("keydown", function(event){
     if (event.key === "Enter"){
@@ -207,7 +200,7 @@ $("mute").addEventListener("click", () =>{
     }
     $("unmute").style.display="inline";
     $("mute").style.display="none";
-    canvas.focus();
+    area.canvas.focus();
 })
 $("unmute").addEventListener("click", ()=>{
     for (let i=0; i<sounds.length; i++){
@@ -215,7 +208,7 @@ $("unmute").addEventListener("click", ()=>{
     }
     $("mute").style.display="inline";
     $("unmute").style.display="none";
-    canvas.focus();
+    area.canvas.focus();
 })
 $("about").addEventListener("click", () =>{
     $("info").style.display="block";
@@ -231,12 +224,12 @@ $("hint").addEventListener("click", () =>{
     if (hints==0){
         $("hint").disabled = true;
     }
-    canvas.focus();
+    area.canvas.focus();
 
 })
 $("infoClose").addEventListener("click", () =>{
     $("info").style.display="none";
-    canvas.focus();
+    area.canvas.focus();
 })
 $("highScoreButton").addEventListener("click", ()=>{
     $("highscorePopup").style.display="block";
@@ -259,21 +252,26 @@ $("highscoreClose").addEventListener("click", ()=>{
 })
 
 socket.on("initBoard", (serverBoard, socketid, color, x, y, users)=>{
+    
     area.board = JSON.parse(serverBoard);
     players = JSON.parse(users);
+
     player.id = socketid;
     player.position[0]=x;
     player.position[1]=y;
     player.color = color;
+    area2 = new arrowarea(45, color);
+    area2.canvas.addEventListener("click",buttonClick);
+    
     area.ctx.translate(-area.clearance-area.size*2, -area.clearance-area.size*2);
     area.boardSets();
-    area.drawBoard();
-    area.drawAllPlayers(players); 
-    area.drawYou();
-    drawPoints(); 
+    area.drawAll(players);
+    //drawArrows();
+    drawPoints();
+
     $("coordinate").innerText = "Your position: "+player.position;
     $("hints").innerText = "Hints left: "+player.hints;
-    canvas.focus();
+    area.canvas.focus();
 
 })
 socket.on("players", (users)=>{
@@ -283,20 +281,51 @@ socket.on("players", (users)=>{
 socket.on("players2", (users)=>{
     $("players").innerText="Players online: "+users;
 })
+socket.on("playerMoved", (id, oldx, oldy, x, y)=>{
+    if (id==player.id){
+        return;
+    }
+    var differencex = -100;
+    var differencey = -100;    
+    if (Math.abs(player.position[0]-oldx)<3){
+        differencex = -player.position[0]+oldx;
+    }else if (player.position[0]==7 && oldx==0){
+        differencex=2;
+    }else if (player.position[0]==8 && oldx<2){
+        differencex=oldx+1;
+    }else if (player.position[0]==0 && oldx>6){
+        differencex=oldx-9;
+    }else if (player.position[0]==1 && oldx ==8){
+        differencex=-2;
+    }
+                
+    if (Math.abs(player.position[1]-oldy)<3){
+        differencey = oldy-player.position[1];
+    }else if (player.position[1]==7 && oldy==0){
+        differencey=2;
+    }else if (player.position[1]==8 && oldy<2){
+        differencey=oldy+1;
+    }else if (player.position[1]==0 && oldy>6){
+        differencey=oldy-9;
+    }else if (player.position[1]==1 && oldy==8){
+        differencey=-2;
+    }
+    
+    var index = 12 + differencex + 5*differencey;
+    if (index>-1){
+        movePlayer(id, oldx, oldy, x, y, index);
+    }
+})
 socket.on("updatePlayers", (users) =>{
     players = JSON.parse(users);
-//    $("players").innerText="Players online: "+players.length;
-    area.drawBoard();
-    drawArrows(); 
-    area.drawAllPlayers(players); 
-    area.drawYou();
+    //$("players").innerText="Players online: "+players.length;
+    //drawArrows(); 
+    area.drawAll(players);
     drawPoints();
 })
 socket.on("updateBoard", (newBoard)=>{
     area.board = JSON.parse(newBoard);
-    area.drawBoard(); 
-    area.drawAllPlayers(players); 
-    area.drawYou();
+    area.drawAll(players);
     area.boardSets();
 })
 socket.on("set", (set) =>{

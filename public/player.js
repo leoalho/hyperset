@@ -11,5 +11,3 @@ export var player={
         hints: 3
         // var superHints = 0;
 }
-
-    

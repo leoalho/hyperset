@@ -12,3 +12,30 @@
 
 - Kentän kollapsoiminen?
 - superhints?
+
+from function cursorlocation:
+            /*
+            if (corx>cards[i].x && corx<(cards[i].x+size*2)
+            && cory>cards[i].y-size && cory<(cards[i].y+size)){
+                colorCard(i+6);
+                click.play();
+                drawAll();
+                checkSet();
+            }
+            */
+
+from functon drawrhomboid
+            /*
+        ctx.beginPath();
+        ctx.strokeStyle = color
+        ctx.moveTo(x,y);
+        ctx.lineTo(x+size,y+size);
+        ctx.lineTo(x+size*2,y);
+        ctx.lineTo(x+size,y-size);
+        ctx.lineTo(x,y);
+        ctx.lineTo(x+size*2,y);
+        ctx.moveTo(x+size,y-size);
+        ctx.lineTo(x+size,y+size);
+        ctx.stroke();
+        */
+

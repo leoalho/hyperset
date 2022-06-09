@@ -1,11 +1,15 @@
 import {player} from "./player.js";
+import {$, equalArrays} from "../utils.js";
 
 export class Area{
-	constructor(canvas){
+	constructor(){
         this.locations = [[-1,-1],[0,-1],[1,-1],[-1,0],[0,0],[1,0],[-1,1],[0,1],[1,1]] //if needed to loop the nine cards around the current player
-		this.ctx = canvas.getContext("2d");
-		this.width = canvas.width;
-		this.height = canvas.height;
+		this.canvas = $("myCanvas");
+        this.canvas.width = Math.min(document.documentElement.clientWidth, 600);
+        this.canvas.height = this.canvas.width;
+        this.ctx = this.canvas.getContext("2d");
+		this.width = this.canvas.width;
+		this.height = this.canvas.height;
 		this.players = [];
         this.board; //2D array of the cards, [0][0]-[8][8]
 		this.clearance = this.width/40 //the distance between two diamonds
@@ -68,22 +72,7 @@ export class Area{
         this.ctx.moveTo(x+this.size, y);
         this.ctx.lineTo(x,y);
         this.ctx.lineTo(x+this.size,y+this.size);
-        this.ctx.fill();
-    
-        /*
-        ctx.beginPath();
-        ctx.strokeStyle = color
-        ctx.moveTo(x,y);
-        ctx.lineTo(x+size,y+size);
-        ctx.lineTo(x+size*2,y);
-        ctx.lineTo(x+size,y-size);
-        ctx.lineTo(x,y);
-        ctx.lineTo(x+size*2,y);
-        ctx.moveTo(x+size,y-size);
-        ctx.lineTo(x+size,y+size);
-        ctx.stroke();
-        */
-    
+        this.ctx.fill();    
     }
     drawBackground(){
         this.ctx.fillStyle = "#FFFFFF";
@@ -97,6 +86,24 @@ export class Area{
             this.ctx.lineTo((2*i-1)*this.size+i*this.clearance,this.width+this.clearance*2+this.size*4);
         }
         this.ctx.stroke();
+    }
+    colorCard(i){ 
+        var x = player.position[0]+i%5-2;
+        x = (x+9)%9;
+        var y = player.position[1]+Math.floor(i/5)-2;
+        y = (y+9)%9;
+        if (this.board[x][y].shape[0]==3){return;}
+        if (this.cards[i].color=="black"){
+            player.cardsChosen.push([x,y]);
+            this.cards[i].color=player.color;
+        }else{
+            this.cards[i].color="black";
+            for (let j=0; j<player.cardsChosen.length; j++){
+                if (equalArrays([x,y],player.cardsChosen[j])){
+                    player.cardsChosen.splice(j,1);
+                }
+            }
+        }
     }
     drawPlayer(x,y,color){
         //draws a singlePlayer
@@ -181,6 +188,15 @@ export class Area{
         this.drawBoard();
         this.drawAllPlayers(players);
         this.drawYou();  
+    }
+    move(players){
+        this.ctx.save();
+        this.ctx.clearRect(this.clearance+this.size*2, this.clearance*1+this.size*2, this.width, this.height);
+        this.ctx.translate(-player.x,-player.y);
+        this.drawBoard();
+        this.drawAllPlayers(players);
+        this.ctx.restore();
+        this.drawYou();
     }
     gameOver(timeLeft, players){
         this.drawAll(players);

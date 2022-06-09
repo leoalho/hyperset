@@ -101,7 +101,7 @@ function timer(game){
 const publicPath    = path.join(__dirname, "/public");
 const port          = 80;
 //const hostname      = "109.204.232.168";
-const hostname      = "192.168.0.3";
+//const hostname      = "192.168.0.3";
 let app             = express();
 let server          = http.createServer(app);
 let io              = socketIO(server);
@@ -174,9 +174,15 @@ io.on("connection", (socket) => {
     socket.on("location", (x,y) =>{
         for(let i=0; i<games[socket.roomNumber].users.length;i++){
             if (socket.id==games[socket.roomNumber].users[i].id){
+                var oldx = games[socket.roomNumber].users[i].corx;
+                var oldy = games[socket.roomNumber].users[i].cory;
                 games[socket.roomNumber].users[i].corx = x;
                 games[socket.roomNumber].users[i].cory = y;
+                var diffx = x-oldx;
+                var diffy = y-oldy;
+                //io.to(socket.room).emit("playerMoved", socket.id, oldx, oldy, x, y);
                 io.to(socket.room).emit("updatePlayers", JSON.stringify(games[socket.roomNumber].users));
+
                 break;
             }
         }
