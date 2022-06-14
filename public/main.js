@@ -2,6 +2,7 @@ import {arrowarea} from "./buttons.js";
 import {$, equalArrays, randomColor, shuffleArray, comparePoints} from "./utils.js"
 import {Area} from "./board.js";
 import {player} from "./player.js";
+import {containsProfanity} from "./filter.js";
 
 var socket = io();
 
@@ -186,6 +187,11 @@ $("usernameInput").addEventListener("keydown", function(event){
             return;
         }
         if (nickname.length==0){
+            return;
+        }
+        if (containsProfanity(nickname)){
+            alert("Please choose a more appropriate username");
+            $("usernameInput").value = "";
             return;
         }
         socket.emit("addUser", nickname);
