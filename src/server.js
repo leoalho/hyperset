@@ -1,3 +1,4 @@
+require('dotenv').config();
 const path          = require("path");
 const http          = require("http");
 const express       = require("express");
@@ -99,13 +100,11 @@ function timer(game){
 }
 
 const publicPath    = path.join(__dirname, "../public");
-const port          = 8080;
-//const hostname      = "109.204.232.168";
-//const hostname      = "192.168.0.3";
-let app             = express();
-let server          = http.createServer(app);
-let io              = socketIO(server);
-
+const port = process.env.PORT || 8080;
+const hostname = process.env.HOSTNAME || "127.0.0.1";
+let app = express();
+let server = http.createServer(app);
+let io = socketIO(server);
 
 var games           = [];
 var privateGames    = [];
@@ -130,9 +129,9 @@ function findRoom(){
 
 app.use(express.static(publicPath));
 
-server.listen(port, ()=> {
+server.listen(port, hostname, ()=> {
     client.connect();
-    console.log("Server is up on port "+port);
+    console.log("Server is up on port "+port + ", on ip " +hostname);
 });
 
 io.on("connection", (socket) => {
