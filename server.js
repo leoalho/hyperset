@@ -99,9 +99,11 @@ function timer(game){
 }
 
 const publicPath    = path.join(__dirname, "/public");
-const port          = 80;
+//const port          = 80;
+const port		= 8080;
 //const hostname      = "109.204.232.168";
 //const hostname      = "192.168.0.3";
+//const hostname		= "16.170.148.25";
 let app             = express();
 let server          = http.createServer(app);
 let io              = socketIO(server);
@@ -130,10 +132,12 @@ function findRoom(){
 
 app.use(express.static(publicPath));
 
-server.listen(port, hostname, ()=> {
+// deleted hostname from the server.listen -function
+server.listen(port, ()=> {
     client.connect();
-    console.log("Server is up on ip "+hostname+" port "+port);
+    console.log("Server is up on  port "+port);
 });
+//changes the console.log
 
 io.on("connection", (socket) => {
     console.log(socket.id +" connected. Users online: "+io.engine.clientsCount);
