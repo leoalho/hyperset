@@ -99,25 +99,13 @@ function timer(game){
   }
 }
 
-<<<<<<< HEAD:server.js
-const publicPath    = path.join(__dirname, "/public");
-//const port          = 80;
-const port		= 8080;
-//const hostname      = "109.204.232.168";
-//const hostname      = "192.168.0.3";
-//const hostname		= "16.170.148.25";
-let app             = express();
-let server          = http.createServer(app);
-let io              = socketIO(server);
-
-=======
 const publicPath    = path.join(__dirname, "../public");
 const port = process.env.PORT || 8080;
 const hostname = process.env.HOSTNAME || "127.0.0.1";
 let app = express();
 let server = http.createServer(app);
 let io = socketIO(server);
->>>>>>> 7b645787040fbebc2c43ecc3be17f1bc25042b78:src/server.js
+
 
 var games           = [];
 var privateGames    = [];
@@ -145,11 +133,9 @@ app.use(express.static(publicPath));
 // deleted hostname from the server.listen -function
 server.listen(port, ()=> {
     client.connect();
-<<<<<<< HEAD:server.js
     console.log("Server is up on  port "+port);
-=======
     console.log("Server is up on port "+port + ", on ip " +hostname);
->>>>>>> 7b645787040fbebc2c43ecc3be17f1bc25042b78:src/server.js
+    console.log("Server is up on port "+port + ", on ip " +hostname);
 });
 //changes the console.log
 
