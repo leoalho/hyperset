@@ -1,114 +1,17 @@
-require('dotenv').config();
-const path          = require("path");
 const http          = require("http");
 const express       = require("express");
 const socketIO      = require("socket.io");
-const { MongoClient } = require("mongodb");
-const {shuffleArray, equalArrays, randomColor, checkSet} = require("./utils.js")
+const { randomColor, checkSet, timer} = require("./utils.js")
 const {game}        = require("./game.js");
+const highScoreServices = require("./services/highScoreServices")
 
-const uri = "mongodb://localhost:27017";
-const client = new MongoClient(uri);
-const database = client.db('testi');
-const highscores = database.collection('highscores');
-
-async function addUser(id, nickname){
-    await highscores.insertOne({_id:id, name: nickname, points: 0, startedPlaying: new Date()})
-}
-async function updatePoints(id, newpoints){
-    await highscores.updateOne({_id:id},{ $set: {points: newpoints}})
-}
-async function highscoresToday(n){
-    const top10 = await highscores.aggregate([
-                    {"$project": {
-                        "name":1,
-                        "points":1,
-                        "year": {"$year":  "$startedPlaying" },
-                        "month":{"$month": "$startedPlaying"},
-                        "day":{"$dayOfMonth": "$startedPlaying"},
-                        }
-                    },{"$match": {
-                        "year": new Date().getFullYear(),
-                        "month":new Date().getMonth()+1, 
-                        "day": new Date().getDate()
-                        }
-                    },{"$sort":{
-                        "points":-1,
-                        "startedPlaying":1
-                        }
-                    },{"$limit":n}]).toArray();
-    return top10;
-}
-async function highscoresThisMonth(n){
-    const top10 = await highscores.aggregate([
-                    {"$project": {
-                        "name":1,
-                        "points":1,
-                        "year": {"$year":  "$startedPlaying" },
-                        "month":{"$month": "$startedPlaying"},
-                        "day":{"$dayOfMonth": "$startedPlaying"},
-                        }
-                    },{"$match": {
-                        "year": new Date().getFullYear(),
-                        "month":new Date().getMonth()+1, 
-                        }
-                    },{"$sort":{
-                        "points":-1,
-                        "startedPlaying":1
-                        }
-                    },{"$limit":n}]).toArray();
-    return top10;
-}
-async function highscoresThisYear(n){
-    const top10 = await highscores.aggregate([
-                    {"$project": {
-                        "name":1,
-                        "points":1,
-                        "year": {"$year":  "$startedPlaying" },
-                        "month":{"$month": "$startedPlaying"},
-                        "day":{"$dayOfMonth": "$startedPlaying"},
-                        }
-                    },{"$match": {
-                        "year": new Date().getFullYear()
-                        }
-                    },{"$sort":{
-                        "points":-1,
-                        "startedPlaying":1
-                        }
-                    },{"$limit":n}]).toArray();
-    return top10;
-}
-async function highscoresAllTime(n){
-    const top10 = await highscores.find().sort({points:-1, startedPlaying:1}).limit(n).toArray()
-    return top10;
-}
-
-function timer(game){
-    // a 10 second timer, prints the remaining time every .1s. Reduces a point and clears the board if the time runs out.
-    io.to(game.room).emit("gameOver", game.counter);
-    game.counter --;
-  if (game.counter < 0)
-  {
-    clearInterval(game.mover);
-    game.counter = 10;
-    game.newGame();
-    io.to(game.room).emit("mayMove");
-    io.to(game.room).emit("updateBoard", JSON.stringify(game.board));
-    io.to(game.room).emit("updatePlayers", JSON.stringify(game.users));
-    io.to(game.room).emit("allSets", game.sets);
-  }
-}
-
-const publicPath    = path.join(__dirname, "../public");
-const port = process.env.PORT || 8080;
-const hostname = process.env.HOSTNAME || "127.0.0.1";
 let app = express();
+app.use(express.static('public'));
+
 let server = http.createServer(app);
 let io = socketIO(server);
 
-
 var games           = [];
-var privateGames    = [];
 var roomNumber      = 0;
 var room = "room"+roomNumber;
 games.push(new game(room));
@@ -128,17 +31,6 @@ function findRoom(){
     games[roomNumber].newGame();
 }
 
-app.use(express.static(publicPath));
-
-// deleted hostname from the server.listen -function
-server.listen(port, ()=> {
-    client.connect();
-    console.log("Server is up on  port "+port);
-    console.log("Server is up on port "+port + ", on ip " +hostname);
-    console.log("Server is up on port "+port + ", on ip " +hostname);
-});
-//changes the console.log
-
 io.on("connection", (socket) => {
     console.log(socket.id +" connected. Users online: "+io.engine.clientsCount);
     socket.emit("players2", io.engine.clientsCount);
@@ -156,7 +48,7 @@ io.on("connection", (socket) => {
         y = Math.floor(Math.random()*9);
 
         games[socket.roomNumber].users.push({id:socket.id, name:userName, color:socket.color, corx:x,cory:y, gamepoints:0, totalpoints:0, created: new Date(), roomNumber: roomNumber})
-        addUser(socket.id, userName);
+        highScoreServices.addUser(socket.id, userName);
         console.log("");
         console.log(socket.id + " started playing as "+ socket.userName + " in room " + socket.room);
         console.log("");
@@ -171,8 +63,8 @@ io.on("connection", (socket) => {
         socket.emit("allSets", games[socket.roomNumber].sets);
 
         io.to(socket.room).emit("updatePlayers", JSON.stringify(games[socket.roomNumber].users));
-        var hiScoresToday = await highscoresToday(5);
-        var hiScoresAllTime = await highscoresAllTime(5);
+        var hiScoresToday = await highScoreServices.highscoresToday(5);
+        var hiScoresAllTime = await highScoreServices.highscoresAllTime(5);
         io.emit("updateHighScores", JSON.stringify(hiScoresToday), JSON.stringify(hiScoresAllTime))
     })
     socket.on("location", (x,y) =>{
@@ -192,19 +84,19 @@ io.on("connection", (socket) => {
         }
     })
     socket.on("highscoresToday", async () =>{
-        var hiscoresToday = await highscoresToday(10);
+        var hiscoresToday = await highScoreServices.highscoresToday(10);
         socket.emit("highscoresToday", JSON.stringify(hiscoresToday))
     })
     socket.on("highscoresThisMonth", async () =>{
-        var hiscoresThisMonth = await highscoresThisMonth(10);
+        var hiscoresThisMonth = await highScoreServices.highscoresThisMonth(10);
         socket.emit("highscoresThisMonth", JSON.stringify(hiscoresThisMonth))
     })
     socket.on("highscoresThisYear", async () =>{
-        var hiscoresThisYear = await highscoresThisYear(10);
+        var hiscoresThisYear = await highScoreServices.highscoresThisYear(10);
         socket.emit("highscoresThisYear", JSON.stringify(hiscoresThisYear))
     })
     socket.on("highscoresAllTime", async () =>{
-        var hiScoresAllTime = await highscoresAllTime(10);
+        var hiScoresAllTime = await highScoreServices.highscoresAllTime(10);
         socket.emit("highscoresAllTime", JSON.stringify(hiScoresAllTime))
     })
     socket.on("checkSet", async (cards) =>{
@@ -224,13 +116,13 @@ io.on("connection", (socket) => {
                 if (socket.id==currentRoom.users[i].id){
                     currentRoom.users[i].gamepoints ++;
                     currentRoom.users[i].totalpoints ++;
-                    updatePoints(currentRoom.users[i].id,currentRoom.users[i].totalpoints);
+                    highScoreServices.updatePoints(currentRoom.users[i].id,currentRoom.users[i].totalpoints);
                     break;
                 }
             }
             io.to(socket.room).emit("updatePlayers", JSON.stringify(currentRoom.users));
-            var hiScoresToday = await highscoresToday(5);
-            var hiScoresAllTime = await highscoresAllTime(5);
+            var hiScoresToday = await highScoreServices.highscoresToday(5);
+            var hiScoresAllTime = await highScoreServices.highscoresAllTime(5);
             socket.emit("set", true);
             io.emit("updateHighScores", JSON.stringify(hiScoresToday), JSON.stringify(hiScoresAllTime))
             console.log("");
@@ -252,14 +144,14 @@ io.on("connection", (socket) => {
             if (socket.id==currentRoom.users[i].id){
                 currentRoom.users[i].gamepoints --;
                 currentRoom.users[i].totalpoints --;
-                updatePoints(socket.id, currentRoom.users[i].totalpoints);
+                highScoreServices.updatePoints(socket.id, currentRoom.users[i].totalpoints);
                 break;
             }
         }
         io.to(socket.room).emit("updatePlayers", JSON.stringify(games[socket.roomNumber].users));
         socket.emit("set", false);
-        var hiscoresToday = await highscoresToday(5);
-        var hiscoresAllTime = await highscoresAllTime(5);
+        var hiscoresToday = await highScoreServices.highscoresToday(5);
+        var hiscoresAllTime = await highScoreServices.highscoresAllTime(5);
         io.emit("updateHighScores", JSON.stringify(hiscoresToday), JSON.stringify(hiscoresAllTime))
     })
     socket.on("disconnect", () => {
@@ -278,3 +170,7 @@ io.on("connection", (socket) => {
         }
     })
 });
+
+module.exports = {
+    server
+}
