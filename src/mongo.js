@@ -1,14 +1,13 @@
 require('dotenv').config();
-const { MongoClient } = require("mongodb");
+const { MongoClient, ServerApiVersion } = require("mongodb");
 
-const newURI = `mongodb://${process.env.USER_NAME}:${process.env.USER_PWD}@${process.env.MONGODB_URI}`
-const client = new MongoClient(newURI);
-//const client = new MongoClient(process.env.MONGOURI);
-const database = client.db('testi');
+const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.USER_PWD}@${process.env.MONGODB_URI}/?retryWrites=true&w=majority`
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+const database = client.db('joukko');
 
-const connectDB = () => {
-    console.log(`Connecting to db ${newURI}`)
-    client.connect()
+const connectDB = async () => {
+    console.log(`Connecting to db ${process.env.MONGODB_URI}`)
+    await client.connect()
     console.log('connected to db')
 }
 
