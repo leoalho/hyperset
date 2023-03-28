@@ -1,0 +1,20 @@
+name: Deployment pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          USER_NAME: ${{ secrets.USER_NAME }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          USER_PWD: ${{ secrets.USER_PWD }]
