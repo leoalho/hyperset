@@ -1,3 +1,4 @@
+require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
 const sqlite3 = require("sqlite3").verbose();
@@ -9,7 +10,7 @@ const main = async () => {
         driver: sqlite3.Database
     })
 
-    const migrations = fs.readdirSync("./migrations");
+    const migrations = fs.readdirSync("./src/database/migrations");
 
     const sortedMigrations = migrations.sort();
 
@@ -24,7 +25,7 @@ const main = async () => {
     } else {
         for (const migration of migrationsWithVersions) {
             if (migration.version > user_version) {
-                const migrationSql = fs.readFileSync(path.join("migrations", migration.migration), "utf-8");
+                const migrationSql = fs.readFileSync(path.join("src", "database", "migrations", migration.migration), "utf-8");
                 console.log("Running migration", migration.migration)
                 await db.exec(migrationSql)
                 await db.exec(`PRAGMA user_version = ${migration.version};`)

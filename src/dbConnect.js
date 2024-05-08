@@ -6,7 +6,8 @@ const dbConnect = async () => {
         filename: process.env.DATABASE,
         driver: sqlite3.Database
     })
+    console.log("Connected to database", process.env.DATABASE)
     return db
 }
 
-export default dbConnect
+module.exports = dbConnect

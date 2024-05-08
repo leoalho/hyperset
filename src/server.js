@@ -5,12 +5,6 @@ const { randomColor, checkSet, timer} = require("./utils.js")
 const {game}        = require("./game.js");
 const highScoreServices = require("./services/highScoreServices")
 
-let app = express();
-app.use(express.static('public'));
-
-let server = http.createServer(app);
-let io = socketIO(server);
-
 var games           = [];
 var roomNumber      = 0;
 var room = "room"+roomNumber;
@@ -31,7 +25,14 @@ function findRoom(){
     games[roomNumber].newGame();
 }
 
-io.on("connection", (socket) => {
+const createServer = (db) => {
+    let app = express();
+    app.use(express.static('public'));
+
+    let server = http.createServer(app);
+    let io = socketIO(server);
+
+    io.on("connection", (socket) => {
     console.log(socket.id +" connected. Users online: "+io.engine.clientsCount);
     socket.emit("players2", io.engine.clientsCount);
     socket.roomNumber = 999;
@@ -48,7 +49,7 @@ io.on("connection", (socket) => {
         y = Math.floor(Math.random()*9);
 
         games[socket.roomNumber].users.push({id:socket.id, name:userName, color:socket.color, corx:x,cory:y, gamepoints:0, totalpoints:0, created: new Date(), roomNumber: roomNumber})
-        highScoreServices.addUser(socket.id, userName);
+        await highScoreServices.addUser(db, socket.id, userName);
         console.log("");
         console.log(socket.id + " started playing as "+ socket.userName + " in room " + socket.room);
         console.log("");
@@ -116,7 +117,7 @@ io.on("connection", (socket) => {
                 if (socket.id==currentRoom.users[i].id){
                     currentRoom.users[i].gamepoints ++;
                     currentRoom.users[i].totalpoints ++;
-                    highScoreServices.updatePoints(currentRoom.users[i].id,currentRoom.users[i].totalpoints);
+                    await highScoreServices.updatePoints(db, currentRoom.users[i].id,currentRoom.users[i].totalpoints);
                     break;
                 }
             }
@@ -144,7 +145,7 @@ io.on("connection", (socket) => {
             if (socket.id==currentRoom.users[i].id){
                 currentRoom.users[i].gamepoints --;
                 currentRoom.users[i].totalpoints --;
-                highScoreServices.updatePoints(socket.id, currentRoom.users[i].totalpoints);
+                await highScoreServices.updatePoints(db, socket.id, currentRoom.users[i].totalpoints);
                 break;
             }
         }
@@ -169,8 +170,11 @@ io.on("connection", (socket) => {
             }
         }
     })
-});
+})
+
+    return server
+};
 
 module.exports = {
-    server
+    createServer
 }
