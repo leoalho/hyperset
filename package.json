@@ -2,12 +2,18 @@
   "main": "index.js",
   "scripts": {
     "start": " node index.js",
-    "dev-start": "nodemon index.js"
+    "dev-start": "nodemon index.js",
+    "migrate": "node migrate ./src/database/migrate.js"
   },
   "dependencies": {
     "dotenv": "^16.0.1",
     "express": "^4.17.3",
     "mongodb": "^4.5.0",
-    "socket.io": "^4.4.1"
+    "socket.io": "^4.4.1",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "prettier": "3.2.5"
   }
 }

@@ -1,2 +1,4 @@
 xtra.txt
 .env
+.idea
+node_modules
