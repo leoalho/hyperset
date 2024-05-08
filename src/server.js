@@ -85,19 +85,19 @@ const createServer = (db) => {
         }
     })
     socket.on("highscoresToday", async () =>{
-        var hiscoresToday = await highScoreServices.highscoresToday(10);
+        const hiscoresToday = await highScoreServices.highscoresToday(10);
         socket.emit("highscoresToday", JSON.stringify(hiscoresToday))
     })
     socket.on("highscoresThisMonth", async () =>{
-        var hiscoresThisMonth = await highScoreServices.highscoresThisMonth(10);
+        const hiscoresThisMonth = await highScoreServices.highscoresThisMonth(10);
         socket.emit("highscoresThisMonth", JSON.stringify(hiscoresThisMonth))
     })
     socket.on("highscoresThisYear", async () =>{
-        var hiscoresThisYear = await highScoreServices.highscoresThisYear(10);
+        const hiscoresThisYear = await highScoreServices.highscoresThisYear(10);
         socket.emit("highscoresThisYear", JSON.stringify(hiscoresThisYear))
     })
     socket.on("highscoresAllTime", async () =>{
-        var hiScoresAllTime = await highScoreServices.highscoresAllTime(10);
+        const hiScoresAllTime = await highScoreServices.highscoresAllTime(10);
         socket.emit("highscoresAllTime", JSON.stringify(hiScoresAllTime))
     })
     socket.on("checkSet", async (cards) =>{
