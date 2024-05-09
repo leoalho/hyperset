@@ -3,3 +3,5 @@ xtra.txt
 .idea
 node_modules
 *.db
+sqlite3
+build

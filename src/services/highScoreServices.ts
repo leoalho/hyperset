@@ -1,13 +1,15 @@
-async function addUser(db, id, nickname){
+import { Db } from "../types";
+
+async function addUser(db: Db, id: string, nickname: string){
     console.log(id,nickname)
     await db.run("INSERT INTO highscores (socket_id, username) VALUES (?, ?)", [id, nickname])
 }
 
-async function updatePoints(db, id, newpoints){
+async function updatePoints(db: Db, id: string, newpoints: number){
     await db.run("UPDATE highscores SET score=? WHERE socket_id=?", [newpoints, id])
 }
 
-async function highscoresToday(db, n){
+async function highscoresToday(db: Db, n: number){
     return db.all(`
         SELECT username, score
         FROM highscores
@@ -19,7 +21,7 @@ async function highscoresToday(db, n){
         `, [n])
     }
 
-async function highscoresThisMonth(db, n){
+async function highscoresThisMonth(db: Db, n: number){
     return db.all(`
         SELECT username, score
         FROM highscores
@@ -31,7 +33,7 @@ async function highscoresThisMonth(db, n){
         `, [n])
 }
 
-async function highscoresThisYear(db, n){
+async function highscoresThisYear(db: Db, n: number){
     return db.all(`
         SELECT username, score
         FROM highscores
@@ -43,7 +45,7 @@ async function highscoresThisYear(db, n){
         `, [n])
 }
 
-async function highscoresAllTime(db, n){
+async function highscoresAllTime(db: Db, n: number){
     return db.all(`
         SELECT username, score
         FROM highscores
@@ -54,4 +56,4 @@ async function highscoresAllTime(db, n){
         `, [n])
 }
 
-module.exports = {addUser, updatePoints, highscoresToday, highscoresThisMonth, highscoresThisYear, highscoresAllTime}
+export default {addUser, updatePoints, highscoresToday, highscoresThisMonth, highscoresThisYear, highscoresAllTime}
