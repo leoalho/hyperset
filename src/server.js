@@ -5,12 +5,6 @@ const { randomColor, checkSet, timer} = require("./utils.js")
 const {game}        = require("./game.js");
 const highScoreServices = require("./services/highScoreServices")
 
-let app = express();
-app.use(express.static('public'));
-
-let server = http.createServer(app);
-let io = socketIO(server);
-
 var games           = [];
 var roomNumber      = 0;
 var room = "room"+roomNumber;
@@ -31,7 +25,14 @@ function findRoom(){
     games[roomNumber].newGame();
 }
 
-io.on("connection", (socket) => {
+const createServer = (db) => {
+    let app = express();
+    app.use(express.static('public'));
+
+    let server = http.createServer(app);
+    let io = socketIO(server);
+
+    io.on("connection", (socket) => {
     console.log(socket.id +" connected. Users online: "+io.engine.clientsCount);
     socket.emit("players2", io.engine.clientsCount);
     socket.roomNumber = 999;
@@ -48,7 +49,7 @@ io.on("connection", (socket) => {
         y = Math.floor(Math.random()*9);
 
         games[socket.roomNumber].users.push({id:socket.id, name:userName, color:socket.color, corx:x,cory:y, gamepoints:0, totalpoints:0, created: new Date(), roomNumber: roomNumber})
-        highScoreServices.addUser(socket.id, userName);
+        await highScoreServices.addUser(db, socket.id, userName);
         console.log("");
         console.log(socket.id + " started playing as "+ socket.userName + " in room " + socket.room);
         console.log("");
@@ -63,8 +64,8 @@ io.on("connection", (socket) => {
         socket.emit("allSets", games[socket.roomNumber].sets);
 
         io.to(socket.room).emit("updatePlayers", JSON.stringify(games[socket.roomNumber].users));
-        var hiScoresToday = await highScoreServices.highscoresToday(5);
-        var hiScoresAllTime = await highScoreServices.highscoresAllTime(5);
+        var hiScoresToday = await highScoreServices.highscoresToday(db, 5);
+        var hiScoresAllTime = await highScoreServices.highscoresAllTime(db, 5);
         io.emit("updateHighScores", JSON.stringify(hiScoresToday), JSON.stringify(hiScoresAllTime))
     })
     socket.on("location", (x,y) =>{
@@ -84,19 +85,19 @@ io.on("connection", (socket) => {
         }
     })
     socket.on("highscoresToday", async () =>{
-        var hiscoresToday = await highScoreServices.highscoresToday(10);
+        const hiscoresToday = await highScoreServices.highscoresToday(db, 10);
         socket.emit("highscoresToday", JSON.stringify(hiscoresToday))
     })
     socket.on("highscoresThisMonth", async () =>{
-        var hiscoresThisMonth = await highScoreServices.highscoresThisMonth(10);
+        const hiscoresThisMonth = await highScoreServices.highscoresThisMonth(db,10);
         socket.emit("highscoresThisMonth", JSON.stringify(hiscoresThisMonth))
     })
     socket.on("highscoresThisYear", async () =>{
-        var hiscoresThisYear = await highScoreServices.highscoresThisYear(10);
+        const hiscoresThisYear = await highScoreServices.highscoresThisYear(db,10);
         socket.emit("highscoresThisYear", JSON.stringify(hiscoresThisYear))
     })
     socket.on("highscoresAllTime", async () =>{
-        var hiScoresAllTime = await highScoreServices.highscoresAllTime(10);
+        const hiScoresAllTime = await highScoreServices.highscoresAllTime(db,10);
         socket.emit("highscoresAllTime", JSON.stringify(hiScoresAllTime))
     })
     socket.on("checkSet", async (cards) =>{
@@ -116,7 +117,7 @@ io.on("connection", (socket) => {
                 if (socket.id==currentRoom.users[i].id){
                     currentRoom.users[i].gamepoints ++;
                     currentRoom.users[i].totalpoints ++;
-                    highScoreServices.updatePoints(currentRoom.users[i].id,currentRoom.users[i].totalpoints);
+                    await highScoreServices.updatePoints(db, currentRoom.users[i].id,currentRoom.users[i].totalpoints);
                     break;
                 }
             }
@@ -144,14 +145,14 @@ io.on("connection", (socket) => {
             if (socket.id==currentRoom.users[i].id){
                 currentRoom.users[i].gamepoints --;
                 currentRoom.users[i].totalpoints --;
-                highScoreServices.updatePoints(socket.id, currentRoom.users[i].totalpoints);
+                await highScoreServices.updatePoints(db, socket.id, currentRoom.users[i].totalpoints);
                 break;
             }
         }
         io.to(socket.room).emit("updatePlayers", JSON.stringify(games[socket.roomNumber].users));
         socket.emit("set", false);
-        var hiscoresToday = await highScoreServices.highscoresToday(5);
-        var hiscoresAllTime = await highScoreServices.highscoresAllTime(5);
+        var hiscoresToday = await highScoreServices.highscoresToday(db,5);
+        var hiscoresAllTime = await highScoreServices.highscoresAllTime(db, 5);
         io.emit("updateHighScores", JSON.stringify(hiscoresToday), JSON.stringify(hiscoresAllTime))
     })
     socket.on("disconnect", () => {
@@ -169,8 +170,11 @@ io.on("connection", (socket) => {
             }
         }
     })
-});
+})
+
+    return server
+};
 
 module.exports = {
-    server
+    createServer
 }
