@@ -92,7 +92,7 @@ function drawPoints(){
     var playerPoints = "<p><u>Your points</u><br>This game: "+player.points+"<br> In total: "+player.pointsTotal+ "</p><p><u>Top 5 players<br> This round: </u><br>";
     players.sort(comparePoints);
     for (let i=0; i<Math.min(5,players.length); i++){
-        playerPoints += players[i].username+": "+players[i].gamepoints+", <br>";
+        playerPoints += players[i].name+": "+players[i].gamepoints+", <br>";
     }
     playerPoints += "<u>Today:</u><br>";
     for (let i=0; i<highscoresToday.length; i++){

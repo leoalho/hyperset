@@ -122,8 +122,8 @@ const createServer = (db) => {
                 }
             }
             io.to(socket.room).emit("updatePlayers", JSON.stringify(currentRoom.users));
-            var hiScoresToday = await highScoreServices.highscoresToday(5);
-            var hiScoresAllTime = await highScoreServices.highscoresAllTime(5);
+            var hiScoresToday = await highScoreServices.highscoresToday(db, 5);
+            var hiScoresAllTime = await highScoreServices.highscoresAllTime(db, 5);
             socket.emit("set", true);
             io.emit("updateHighScores", JSON.stringify(hiScoresToday), JSON.stringify(hiScoresAllTime))
             console.log("");
