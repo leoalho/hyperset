@@ -64,8 +64,8 @@ const createServer = (db) => {
         socket.emit("allSets", games[socket.roomNumber].sets);
 
         io.to(socket.room).emit("updatePlayers", JSON.stringify(games[socket.roomNumber].users));
-        var hiScoresToday = await highScoreServices.highscoresToday(5);
-        var hiScoresAllTime = await highScoreServices.highscoresAllTime(5);
+        var hiScoresToday = await highScoreServices.highscoresToday(db, 5);
+        var hiScoresAllTime = await highScoreServices.highscoresAllTime(db, 5);
         io.emit("updateHighScores", JSON.stringify(hiScoresToday), JSON.stringify(hiScoresAllTime))
     })
     socket.on("location", (x,y) =>{
@@ -85,19 +85,19 @@ const createServer = (db) => {
         }
     })
     socket.on("highscoresToday", async () =>{
-        const hiscoresToday = await highScoreServices.highscoresToday(10);
+        const hiscoresToday = await highScoreServices.highscoresToday(db, 10);
         socket.emit("highscoresToday", JSON.stringify(hiscoresToday))
     })
     socket.on("highscoresThisMonth", async () =>{
-        const hiscoresThisMonth = await highScoreServices.highscoresThisMonth(10);
+        const hiscoresThisMonth = await highScoreServices.highscoresThisMonth(db,10);
         socket.emit("highscoresThisMonth", JSON.stringify(hiscoresThisMonth))
     })
     socket.on("highscoresThisYear", async () =>{
-        const hiscoresThisYear = await highScoreServices.highscoresThisYear(10);
+        const hiscoresThisYear = await highScoreServices.highscoresThisYear(db,10);
         socket.emit("highscoresThisYear", JSON.stringify(hiscoresThisYear))
     })
     socket.on("highscoresAllTime", async () =>{
-        const hiScoresAllTime = await highScoreServices.highscoresAllTime(10);
+        const hiScoresAllTime = await highScoreServices.highscoresAllTime(db,10);
         socket.emit("highscoresAllTime", JSON.stringify(hiScoresAllTime))
     })
     socket.on("checkSet", async (cards) =>{
@@ -151,8 +151,8 @@ const createServer = (db) => {
         }
         io.to(socket.room).emit("updatePlayers", JSON.stringify(games[socket.roomNumber].users));
         socket.emit("set", false);
-        var hiscoresToday = await highScoreServices.highscoresToday(5);
-        var hiscoresAllTime = await highScoreServices.highscoresAllTime(5);
+        var hiscoresToday = await highScoreServices.highscoresToday(db,5);
+        var hiscoresAllTime = await highScoreServices.highscoresAllTime(db, 5);
         io.emit("updateHighScores", JSON.stringify(hiscoresToday), JSON.stringify(hiscoresAllTime))
     })
     socket.on("disconnect", () => {

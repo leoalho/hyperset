@@ -92,15 +92,15 @@ function drawPoints(){
     var playerPoints = "<p><u>Your points</u><br>This game: "+player.points+"<br> In total: "+player.pointsTotal+ "</p><p><u>Top 5 players<br> This round: </u><br>";
     players.sort(comparePoints);
     for (let i=0; i<Math.min(5,players.length); i++){
-        playerPoints += players[i].name+": "+players[i].gamepoints+", <br>";
+        playerPoints += players[i].username+": "+players[i].gamepoints+", <br>";
     }
     playerPoints += "<u>Today:</u><br>";
     for (let i=0; i<highscoresToday.length; i++){
-        playerPoints += highscoresToday[i].name+": "+highscoresToday[i].points+", <br>";
+        playerPoints += highscoresToday[i].username+": "+highscoresToday[i].score+", <br>";
     }
     playerPoints += "<u>All time:</u><br>";
     for (let i=0; i<highscoresAllTime.length; i++){
-        playerPoints += highscoresAllTime[i].name+": "+highscoresAllTime[i].points+", <br>";
+        playerPoints += highscoresAllTime[i].username+": "+highscoresAllTime[i].score+", <br>";
     }
     playerPoints += "</p>";
     $("points").innerHTML = playerPoints;
@@ -372,7 +372,7 @@ socket.on("highscoresAllTime",(newScoresAllTime)=>{
     highscoresAllTime = JSON.parse(newScoresAllTime);
     var highscoreText = "Highscores alltime:<br>";
     for (var i=0;i<highscoresAllTime.length;i++){
-        highscoreText += i+1+": "+highscoresAllTime[i].name+": "+highscoresAllTime[i].points+"<br>";
+        highscoreText += i+1+": "+highscoresAllTime[i].username+": "+highscoresAllTime[i].score+"<br>";
     }
     $("highscoreText").innerHTML=highscoreText;
 })
@@ -380,7 +380,7 @@ socket.on("highscoresToday", (newScoresToday)=>{
     highscoresToday = JSON.parse(newScoresToday);
     var highscoreText = "Highscores today:<br>";
     for (var i=0;i<highscoresToday.length;i++){
-        highscoreText += i+1+": "+highscoresToday[i].name+": "+highscoresToday[i].points+"<br>";
+        highscoreText += i+1+": "+highscoresToday[i].username+": "+highscoresToday[i].score+"<br>";
     }
     $("highscoreText").innerHTML=highscoreText;
 })
@@ -388,7 +388,7 @@ socket.on("highscoresThisMonth", (newScoresToday)=>{
     highscoresThisMonth = JSON.parse(newScoresToday);
     var highscoreText = "Highscores this month:<br>";
     for (var i=0;i<highscoresThisMonth.length;i++){
-        highscoreText += i+1+": "+highscoresThisMonth[i].name+": "+highscoresThisMonth[i].points+"<br>";
+        highscoreText += i+1+": "+highscoresThisMonth[i].username+": "+highscoresThisMonth[i].score+"<br>";
     }
     $("highscoreText").innerHTML=highscoreText;
 })
@@ -396,7 +396,7 @@ socket.on("highscoresThisYear", (newScoresToday)=>{
     highscoresThisYear = JSON.parse(newScoresToday);
     var highscoreText = "Highscores this year:<br>";
     for (var i=0;i<highscoresThisYear.length;i++){
-        highscoreText += i+1+": "+highscoresThisYear[i].name+": "+highscoresThisYear[i].points+"<br>";
+        highscoreText += i+1+": "+highscoresThisYear[i].username+": "+highscoresThisYear[i].score+"<br>";
     }
     $("highscoreText").innerHTML=highscoreText;
 })
