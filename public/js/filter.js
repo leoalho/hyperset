@@ -1,13 +1,13 @@
-import {badwordsEN} from "./badwords.js";
+import { badwordsEN } from "./badwords.js";
 
-function containsProfanity(word){
-    let lowercaseword = word.toLowerCase();
-    for (let badword of badwordsEN){
-        if (lowercaseword.includes(badword)){
-            return true;
-        }
+function containsProfanity(word) {
+  let lowercaseword = word.toLowerCase();
+  for (let badword of badwordsEN) {
+    if (lowercaseword.includes(badword)) {
+      return true;
     }
-    return false;
+  }
+  return false;
 }
 
-export{containsProfanity};
+export { containsProfanity };

@@ -1,10 +1,11 @@
-html, body {
-    height: 100%;
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-  } 
-.btn{
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+.btn {
   background-color: white;
   border: 0px;
   cursor: pointer;
@@ -12,109 +13,109 @@ html, body {
 .btn:hover {
   opacity: 0.5;
 }
-.sameLine{
-  display:inline-block;
+.sameLine {
+  display: inline-block;
 }
 .login {
   font-size: 20px;
-  display:flex;
+  display: flex;
   flex-direction: column;
   place-items: center;
   text-align: center;
 }
-.example{
+.example {
   margin: 50px;
 }
 .input {
-  outline:none;
-  border :0; 
-  border-bottom :2px solid grey;
+  outline: none;
+  border: 0;
+  border-bottom: 2px solid grey;
   color: grey;
   font-size: 20px;
   width: 200px;
   margin: 30px;
 }
-.buttons{
+.buttons {
   margin-top: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.highscores{
+.highscores {
   margin: 5px;
   font-size: 20px;
   border: 2px solid black;
   cursor: pointer;
-  color:black;
+  color: black;
   background-color: #ffffff;
 }
-.highscores:hover{
-  color:#ffffff;
+.highscores:hover {
+  color: #ffffff;
   background-color: black;
 }
-.about{
+.about {
   margin-left: 10px;
 }
 .game {
-  width:920px;
+  width: 920px;
   font-size: 20px;
   display: none;
   margin: auto;
   grid-template-areas: "left middle right";
 }
-.leftcolumn{
+.leftcolumn {
   width: 160px;
   margin: 20px;
   flex-shrink: 0;
   grid-area: left;
 }
-.hint{
-  width:100px;
+.hint {
+  width: 100px;
   height: 30px;
   font-size: 20px;
   border: 2px solid black;
   cursor: pointer;
-  color:black;
+  color: black;
   background-color: #ffffff;
 }
-.hint:hover{
-  color:#ffffff;
+.hint:hover {
+  color: #ffffff;
   background-color: black;
 }
-.hint:disabled{
+.hint:disabled {
   background-color: gray;
 }
-.middlecolumn{
-  width:600px;
+.middlecolumn {
+  width: 600px;
   grid-area: middle;
 }
-.canvas{
+.canvas {
   border: 0px;
   margin-top: 20px;
 }
-.rightcolumn{
+.rightcolumn {
   width: 160px;
   margin: 20px;
   flex-shrink: 0;
   grid-area: right;
 }
-.unmute{
-  display:none;
-}
-.canvas2{
+.unmute {
   display: none;
 }
-.info{
+.canvas2 {
   display: none;
-  background-color: rgba(0,0,0,0.4);
+}
+.info {
+  display: none;
+  background-color: rgba(0, 0, 0, 0.4);
   z-index: 1000;
   position: absolute;
-  left:0px;
-  top:0px;
+  left: 0px;
+  top: 0px;
   width: 100%;
   height: 100%;
 }
-.infoContainer{
+.infoContainer {
   background-color: #ffffff;
   margin: auto;
   width: 50%;
@@ -132,15 +133,15 @@ html, body {
   font-size: 20px;
   border: 2px solid black;
   cursor: pointer;
-  color:black;
+  color: black;
   background-color: #ffffff;
 }
-.highscorebutton:hover{
-  color:#ffffff;
+.highscorebutton:hover {
+  color: #ffffff;
   background-color: black;
 }
 .close {
-  float:right;
+  float: right;
   margin: 5px;
   margin-right: 20px;
   position: right;
@@ -149,18 +150,18 @@ html, body {
   width: 30px;
   height: 30px;
 }
-.infoText{
-  font-size:large;
+.infoText {
+  font-size: large;
   overflow: auto;
   padding: 5px;
 }
-@media (max-width:741px){
-  .example{
+@media (max-width: 741px) {
+  .example {
     width: 100%;
   }
 }
 @media (hover: none) {
-  .game{
+  .game {
     width: 100%;
     font-size: 18px;
     align-items: center;
@@ -168,27 +169,26 @@ html, body {
     grid-template-areas:
       "middle middle"
       "arrow right"
-        "left right";
+      "left right";
   }
   .canvas2 {
-    width:200px;
+    width: 200px;
     display: block;
     grid-area: "arrow";
-}
-  .middlecolumn{
+  }
+  .middlecolumn {
     width: 100%;
   }
-  .rightcolumn{
+  .rightcolumn {
     margin-top: 5px;
     height: 370px;
-    overflow:auto;
+    overflow: auto;
   }
-  .leftcolumn{
+  .leftcolumn {
     margin-top: 0px;
     margin-bottom: 0px;
   }
-  .infoContainer{
+  .infoContainer {
     width: 80%;
   }
 }
-

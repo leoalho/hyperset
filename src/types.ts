@@ -3,15 +3,16 @@ import { Server } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import sqlite3 from "sqlite3";
 
-export type Card = [number, number, number, number]
+export type Card = [number, number, number, number];
 
-export type Deck = Card[]
+export type Deck = Card[];
 
 export interface BoardEntry {
   shape: Card;
 }
 
-export interface User { //TODO camelcase
+export interface User {
+  //TODO camelcase
   id: string;
   name: string;
   color: string;
@@ -30,6 +31,11 @@ interface SocketData {
   color: string;
 }
 
-export type Io = Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, SocketData>
+export type Io = Server<
+  DefaultEventsMap,
+  DefaultEventsMap,
+  DefaultEventsMap,
+  SocketData
+>;
 
-export type Db = Database<sqlite3.Database, sqlite3.Statement>
+export type Db = Database<sqlite3.Database, sqlite3.Statement>;
