@@ -3,7 +3,7 @@ WORKDIR /usr/src/app
 COPY  . .
 
 RUN apk update && apk upgrade
-RUN apk add --no-cache sqlite~=3.32.1-r0
+RUN apk add --no-cache sqlite
 RUN crontab cron
 RUN npm ci
 
