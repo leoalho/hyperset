@@ -2,14 +2,14 @@ import http from "http";
 import express from "express";
 import { Server } from "socket.io";
 import { randomColor, checkSet, timer } from "./utils";
-import { game } from "./game";
+import { Game } from "./Game";
 import highScoreServices from "./services/highScoreServices";
 import { Db, Io } from "./types";
 
-var games: game[] = [];
+var games: Game[] = [];
 var roomNumber = 0;
 var room = "room" + roomNumber;
-games.push(new game(room));
+games.push(new Game(room));
 games[roomNumber].newGame();
 
 function findRoom() {
@@ -22,7 +22,7 @@ function findRoom() {
   }
   roomNumber = games.length;
   room = "room" + roomNumber;
-  games.push(new game(room));
+  games.push(new Game(room));
   games[roomNumber].newGame();
 }
 

@@ -1,5 +1,5 @@
 import { Card, Io } from "./types";
-import { game } from "./game";
+import { Game } from "./Game";
 
 export function shuffleArray(array: any[]) {
   // function for shuffling arrays
@@ -35,7 +35,7 @@ export function checkSet(card1: Card, card2: Card, card3: Card) {
   return numbersMatch + colorsMatch + fillsMatch + shapesMatch == 0;
 }
 
-export function timer(game: game, io: Io) {
+export function timer(game: Game, io: Io) {
   // a 10-second timer, prints the remaining time every .1s. Reduces a point and clears the board if the time runs out.
   io.to(game.room).emit("gameOver", game.counter);
   game.counter--;

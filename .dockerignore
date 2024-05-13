@@ -2,3 +2,5 @@ node_modules
 xtra.txt
 .env
 fly.toml
+sqlite3
+*.db

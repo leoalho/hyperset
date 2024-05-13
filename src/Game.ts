@@ -12,7 +12,7 @@ const locations = [
   [1, 1],
 ];
 
-export class game {
+export class Game {
   users: User[]; //TODO fix anys
   deck: Deck;
   board: BoardEntry[][];
