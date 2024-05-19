@@ -10,19 +10,19 @@ import { Area } from "./board.js";
 import { player } from "./player.js";
 import { containsProfanity } from "./filter.js";
 
-var socket = io();
+const socket = io();
 
-var area = new Area();
-var area2;
+const area = new Area(player);
+let area2;
 
-var players; //list of players
-var mover; //used for animation
-var counter = 10; //used for animation
+const players = []; //list of players
+let mover; //used for animation
+let counter = 10; //used for animation
 
-var highscoresToday = [];
-var highscoresThisMonth = [];
-var highscoresThisYear = [];
-var highscoresAllTime = [];
+let highscoresToday = [];
+let highscoresThisMonth = [];
+let highscoresThisYear = [];
+let highscoresAllTime = [];
 
 const click = new Audio("sounds/click.mp3");
 const fail = new Audio("sounds/fail.mp3");
@@ -51,6 +51,7 @@ function move(movex, movey, posx, posy) {
     $("coordinate").innerText = "Your position: " + player.position;
   }
 }
+
 function moveOther(diffx, diffy, otherColor, index) {
   area.drawBoard();
   area.drawPlayer(
@@ -65,6 +66,7 @@ function moveOther(diffx, diffy, otherColor, index) {
     clearInterval(mover);
   }
 }
+
 function movePlayer(id, oldx, oldy, x, y, index) {
   counter = 10;
   var diffx = oldx - x;
@@ -79,6 +81,7 @@ function movePlayer(id, oldx, oldy, x, y, index) {
     moveOther(diffx, diffy, otherColor, index);
   }, 50);
 }
+
 function checkSet() {
   if (player.cardsChosen.length == 3) {
     socket.emit("checkSet", JSON.stringify(player.cardsChosen));
@@ -86,6 +89,7 @@ function checkSet() {
     player.cardsChosen = [];
   }
 }
+
 function cursorLocation(e) {
   //changes the color of the card clicked adds or removes that card to the cardsChosen Array
   let rect = area.canvas.getBoundingClientRect();
@@ -100,6 +104,7 @@ function cursorLocation(e) {
     }
   }
 }
+
 function drawPoints() {
   var playerPoints =
     "<p><u>Your points</u><br>This game: " +
@@ -127,6 +132,7 @@ function drawPoints() {
   playerPoints += "</p>";
   $("points").innerHTML = playerPoints;
 }
+
 function moveUp() {
   player.moving = true;
   area.resetColors();
@@ -135,6 +141,7 @@ function moveUp() {
     move(0, -area.movement, 0, -1);
   }, 50);
 }
+
 function moveDown() {
   player.moving = true;
   area.resetColors();
@@ -143,6 +150,7 @@ function moveDown() {
     move(0, area.movement, 0, 1);
   }, 50);
 }
+
 function moveLeft() {
   player.moving = true;
   area.resetColors();
@@ -151,6 +159,7 @@ function moveLeft() {
     move(-area.movement, 0, -1, 0);
   }, 50);
 }
+
 function moveRight() {
   player.moving = true;
   area.resetColors();
@@ -159,6 +168,7 @@ function moveRight() {
     move(area.movement, 0, 1, 0);
   }, 50);
 }
+
 area.canvas.addEventListener("keydown", function (event) {
   if (event.code === "ArrowDown" && !player.moving) {
     moveDown();
@@ -173,6 +183,7 @@ area.canvas.addEventListener("keydown", function (event) {
     moveRight();
   }
 });
+
 area.canvas.addEventListener("click", cursorLocation);
 
 function buttonClick(e) {
@@ -222,6 +233,7 @@ $("usernameInput").addEventListener("keydown", function (event) {
     $("usernameInput").value = "";
   }
 });
+
 $("mute").addEventListener("click", () => {
   for (let i = 0; i < sounds.length; i++) {
     sounds[i].muted = true;
@@ -230,6 +242,7 @@ $("mute").addEventListener("click", () => {
   $("mute").style.display = "none";
   area.canvas.focus();
 });
+
 $("unmute").addEventListener("click", () => {
   for (let i = 0; i < sounds.length; i++) {
     sounds[i].muted = false;
@@ -238,51 +251,52 @@ $("unmute").addEventListener("click", () => {
   $("unmute").style.display = "none";
   area.canvas.focus();
 });
+
 $("about").addEventListener("click", () => {
   $("info").style.display = "block";
 });
+
 $("about2").addEventListener("click", () => {
   $("info").style.display = "block";
 });
+
 $("hint").addEventListener("click", () => {
-  area.displayText(area.boardSets(), players);
-  setTimeout(() => {
-    area.drawAll(players);
-  }, 1000);
-  player.hints--;
-  $("hints").innerText = "Hints left: " + player.hints;
-  if (hints == 0) {
-    $("hint").disabled = true;
-  }
-  area.canvas.focus();
+  socket.emit("hints");
 });
+
 $("infoClose").addEventListener("click", () => {
   $("info").style.display = "none";
   area.canvas.focus();
 });
+
 $("highScoreButton").addEventListener("click", () => {
   $("highscorePopup").style.display = "block";
   socket.emit("highscoresAllTime");
 });
+
 $("today").addEventListener("click", () => {
   socket.emit("highscoresToday");
 });
+
 $("month").addEventListener("click", () => {
   socket.emit("highscoresThisMonth");
 });
+
 $("year").addEventListener("click", () => {
   socket.emit("highscoresThisYear");
 });
+
 $("allTime").addEventListener("click", () => {
   socket.emit("highscoresAllTime");
 });
+
 $("highscoreClose").addEventListener("click", () => {
   $("highscorePopup").style.display = "none";
 });
 
 socket.on("initBoard", (serverBoard, socketid, color, x, y, users) => {
   area.board = JSON.parse(serverBoard);
-  players = JSON.parse(users);
+  const players = JSON.parse(users);
 
   player.id = socketid;
   player.position[0] = x;
@@ -304,13 +318,16 @@ socket.on("initBoard", (serverBoard, socketid, color, x, y, users) => {
   $("hints").innerText = "Hints left: " + player.hints;
   area.canvas.focus();
 });
+
 socket.on("players", (users) => {
-  players = JSON.parse(users);
+  const players = JSON.parse(users);
   $("players").innerText = "Players online: " + players.length;
 });
+
 socket.on("players2", (users) => {
   $("players").innerText = "Players online: " + users;
 });
+
 socket.on("playerMoved", (id, oldx, oldy, x, y) => {
   if (id == player.id) {
     return;
@@ -346,18 +363,21 @@ socket.on("playerMoved", (id, oldx, oldy, x, y) => {
     movePlayer(id, oldx, oldy, x, y, index);
   }
 });
+
 socket.on("updatePlayers", (users) => {
-  players = JSON.parse(users);
+  const players = JSON.parse(users);
   //$("players").innerText="Players online: "+players.length;
   //drawArrows();
   area.drawAll(players);
   drawPoints();
 });
+
 socket.on("updateBoard", (newBoard) => {
   area.board = JSON.parse(newBoard);
   area.drawAll(players);
   area.boardSets();
 });
+
 socket.on("set", (set) => {
   if (set) {
     area.displayText("SUCCESS!", players);
@@ -380,22 +400,37 @@ socket.on("set", (set) => {
   player.points--;
   player.pointsTotal--;
 });
+
+socket.on("hints", (hints) => {
+  player.hints--;
+  $("hints").innerText = "Hints left: " + player.hints;
+  area.displayText(area.boardSets(), players);
+  setTimeout(() => {
+    area.drawAll(players);
+  }, 1000);
+  area.canvas.focus();
+});
+
 socket.on("allSets", (sets) => {
   $("allSets").innerText = "Collections left: " + sets;
 });
+
 socket.on("gameOver", (timeLeft) => {
   player.points = 0;
   player.moving = true;
   area.gameOver(timeLeft, players);
 });
+
 socket.on("mayMove", () => {
   player.moving = false;
 });
+
 socket.on("updateHighScores", (newScoresToday, newScoresAllTime) => {
   highscoresToday = JSON.parse(newScoresToday);
   highscoresAllTime = JSON.parse(newScoresAllTime);
   drawPoints();
 });
+
 socket.on("highscoresAllTime", (newScoresAllTime) => {
   highscoresAllTime = JSON.parse(newScoresAllTime);
   var highscoreText = "Highscores alltime:<br>";
@@ -411,6 +446,7 @@ socket.on("highscoresAllTime", (newScoresAllTime) => {
   }
   $("highscoreText").innerHTML = highscoreText;
 });
+
 socket.on("highscoresToday", (newScoresToday) => {
   highscoresToday = JSON.parse(newScoresToday);
   var highscoreText = "Highscores today:<br>";
@@ -426,6 +462,7 @@ socket.on("highscoresToday", (newScoresToday) => {
   }
   $("highscoreText").innerHTML = highscoreText;
 });
+
 socket.on("highscoresThisMonth", (newScoresToday) => {
   highscoresThisMonth = JSON.parse(newScoresToday);
   var highscoreText = "Highscores this month:<br>";
@@ -441,6 +478,7 @@ socket.on("highscoresThisMonth", (newScoresToday) => {
   }
   $("highscoreText").innerHTML = highscoreText;
 });
+
 socket.on("highscoresThisYear", (newScoresToday) => {
   highscoresThisYear = JSON.parse(newScoresToday);
   var highscoreText = "Highscores this year:<br>";

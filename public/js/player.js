@@ -1,4 +1,4 @@
-export var player = {
+export const player = {
   position: [0, 0],
   x: 0, //your x coordinate
   y: 0, //your y coordinate
