@@ -20,6 +20,7 @@ export interface User {
   cory: number;
   gamepoints: number;
   totalpoints: number;
+  hints: number;
   created: Date;
   roomNumber: number;
 }

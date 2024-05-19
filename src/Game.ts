@@ -1,6 +1,6 @@
 import { shuffleArray, equalArrays, checkSet } from "./utils";
 import { BoardEntry, Card, Deck, User } from "./types";
-const locations = [
+export const locations = [
   [-1, -1],
   [0, -1],
   [1, -1],

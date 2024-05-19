@@ -1,5 +1,5 @@
 import { Db, Io } from "./types";
-import { Game } from "./Game";
+import { Game, locations } from "./Game";
 import http from "http";
 import express from "express";
 import { Server } from "socket.io";
@@ -92,6 +92,7 @@ export class GameServer {
           cory: y,
           gamepoints: 0,
           totalpoints: 0,
+          hints: 3,
           created: new Date(),
           roomNumber: this.currentRoomNumber,
         });
@@ -137,26 +138,20 @@ export class GameServer {
         );
       });
       socket.on("location", (x, y) => {
-        for (
-          let i = 0;
-          i < this.games[socket.data.roomNumber!].users.length;
-          i++
-        ) {
-          if (socket.id == this.games[socket.data.roomNumber!].users[i].id) {
-            // var oldx = games[socket.data.roomNumber].users[i].corx;
-            // var oldy = games[socket.data.roomNumber].users[i].cory;
-            this.games[socket.data.roomNumber!].users[i].corx = x;
-            this.games[socket.data.roomNumber!].users[i].cory = y;
-            // var diffx = x-oldx;
-            // var diffy = y-oldy;
-            //io.to(socket.room).emit("playerMoved", socket.id, oldx, oldy, x, y);
-            io.to(socket.data.room!).emit(
-              "updatePlayers",
-              JSON.stringify(this.games[socket.data.roomNumber!].users),
-            );
-
-            break;
-          }
+        const room = this.games[socket.data.roomNumber!];
+        const user = room.users.find((user) => socket.id === user.id);
+        if (user) {
+          // var oldx = games[socket.data.roomNumber].users[i].corx;
+          // var oldy = games[socket.data.roomNumber].users[i].cory;
+          user.corx = x;
+          user.cory = y;
+          // var diffx = x-oldx;
+          // var diffy = y-oldy;
+          //io.to(socket.room).emit("playerMoved", socket.id, oldx, oldy, x, y);
+          io.to(socket.data.room!).emit(
+            "updatePlayers",
+            JSON.stringify(this.games[socket.data.roomNumber!].users),
+          );
         }
       });
       socket.on("highscoresToday", async () => {
@@ -187,6 +182,38 @@ export class GameServer {
         );
         socket.emit("highscoresAllTime", JSON.stringify(hiScoresAllTime));
       });
+      socket.on("hints", async () => {
+        const room = this.games[socket.data.roomNumber!];
+        const user = room.users.find((user) => socket.id === user.id);
+        if (user && user.hints > 0) {
+          user.hints--;
+          let hints = 0;
+          for (let i = 0; i < 7; i++) {
+            for (let j = i + 1; j < 8; j++) {
+              for (let k = j + 1; k < 9; k++) {
+                const card1 =
+                  room.board[(user.corx + locations[i][0] + 9) % 9][
+                    (user.cory + locations[i][1] + 9) % 9
+                  ].shape;
+                const card2 =
+                  room.board[(user.corx + locations[j][0] + 9) % 9][
+                    (user.cory + locations[j][1] + 9) % 9
+                  ].shape;
+                const card3 =
+                  room.board[(user.corx + locations[k][0] + 9) % 9][
+                    (user.corx + locations[k][1] + 9) % 9
+                  ].shape;
+                if (checkSet(card1, card2, card3)) {
+                  hints++;
+                }
+              }
+            }
+          }
+          // console.log(room.users);
+          socket.emit("updatePlayers", JSON.stringify(room.users));
+          socket.emit("hints", hints);
+        }
+      });
       socket.on("checkSet", async (cards) => {
         const n = JSON.parse(cards);
         const currentRoom = this.games[socket.data.roomNumber!];
@@ -207,6 +234,7 @@ export class GameServer {
             if (socket.id == currentRoom.users[i].id) {
               currentRoom.users[i].gamepoints++;
               currentRoom.users[i].totalpoints++;
+              currentRoom.users[i].hints++;
               await highScoreServices.updatePoints(
                 this.db,
                 currentRoom.users[i].id,
@@ -250,7 +278,13 @@ export class GameServer {
           console.log("------------------------------------------");
 
           if (currentRoom.sets == 0) {
-            currentRoom.mover = setInterval(timer, 1000, currentRoom);
+            currentRoom.mover = setInterval(
+              () => {
+                timer(this.games[socket.data.roomNumber!], io);
+              },
+              1000,
+              currentRoom,
+            );
             return;
           }
           return;
