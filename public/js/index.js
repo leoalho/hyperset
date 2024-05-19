@@ -1,11 +1,5 @@
 import { arrowarea } from "./buttons.js";
-import {
-  $,
-  equalArrays,
-  randomColor,
-  shuffleArray,
-  comparePoints,
-} from "./utils.js";
+import { $, comparePoints } from "./utils.js";
 import { Area } from "./board.js";
 import { player } from "./player.js";
 import { containsProfanity } from "./filter.js";
@@ -15,7 +9,7 @@ const socket = io();
 const area = new Area(player);
 let area2;
 
-const players = []; //list of players
+let players = []; //list of players
 let mover; //used for animation
 let counter = 10; //used for animation
 
@@ -34,7 +28,7 @@ function move(movex, movey, posx, posy) {
   player.y += movey;
   area.move(players);
   counter--;
-  if (counter == 0) {
+  if (counter === 0) {
     counter = 10;
     clearInterval(mover);
 
@@ -61,7 +55,7 @@ function moveOther(diffx, diffy, otherColor, index) {
   );
   area.drawYou();
   counter--;
-  if (counter == 0) {
+  if (counter === 0) {
     counter = 10;
     clearInterval(mover);
   }
@@ -69,11 +63,11 @@ function moveOther(diffx, diffy, otherColor, index) {
 
 function movePlayer(id, oldx, oldy, x, y, index) {
   counter = 10;
-  var diffx = oldx - x;
-  var diffy = oldy - y;
-  var otherColor;
-  for (var i; i < players.length; i++) {
-    if (id == players[i]) {
+  let diffx = oldx - x;
+  let diffy = oldy - y;
+  let otherColor;
+  for (let i = 0; i < players.length; i++) {
+    if (id === players[i]) {
       otherColor = players[i].color;
     }
   }
@@ -83,7 +77,7 @@ function movePlayer(id, oldx, oldy, x, y, index) {
 }
 
 function checkSet() {
-  if (player.cardsChosen.length == 3) {
+  if (player.cardsChosen.length === 3) {
     socket.emit("checkSet", JSON.stringify(player.cardsChosen));
     area.resetColors();
     player.cardsChosen = [];
@@ -106,7 +100,7 @@ function cursorLocation(e) {
 }
 
 function drawPoints() {
-  var playerPoints =
+  let playerPoints =
     "<p><u>Your points</u><br>This game: " +
     player.points +
     "<br> In total: " +
@@ -213,13 +207,13 @@ $("usernameInput").addEventListener("keydown", function (event) {
       $("usernameInput").value = "";
       return;
     }
-    var nickname = $("usernameInput").value;
+    const nickname = $("usernameInput").value;
     if (nickname.length > 20) {
       alert("Please choose a shorter username (<20 charaacters)");
       $("usernameInput").value = "";
       return;
     }
-    if (nickname.length == 0) {
+    if (nickname.length === 0) {
       return;
     }
     if (containsProfanity(nickname)) {
@@ -296,7 +290,7 @@ $("highscoreClose").addEventListener("click", () => {
 
 socket.on("initBoard", (serverBoard, socketid, color, x, y, users) => {
   area.board = JSON.parse(serverBoard);
-  const players = JSON.parse(users);
+  players = JSON.parse(users);
 
   player.id = socketid;
   player.position[0] = x;
@@ -320,7 +314,7 @@ socket.on("initBoard", (serverBoard, socketid, color, x, y, users) => {
 });
 
 socket.on("players", (users) => {
-  const players = JSON.parse(users);
+  players = JSON.parse(users);
   $("players").innerText = "Players online: " + players.length;
 });
 
@@ -329,43 +323,43 @@ socket.on("players2", (users) => {
 });
 
 socket.on("playerMoved", (id, oldx, oldy, x, y) => {
-  if (id == player.id) {
+  if (id === player.id) {
     return;
   }
-  var differencex = -100;
-  var differencey = -100;
+  let differencex = -100;
+  let differencey = -100;
   if (Math.abs(player.position[0] - oldx) < 3) {
     differencex = -player.position[0] + oldx;
-  } else if (player.position[0] == 7 && oldx == 0) {
+  } else if (player.position[0] === 7 && oldx === 0) {
     differencex = 2;
-  } else if (player.position[0] == 8 && oldx < 2) {
+  } else if (player.position[0] === 8 && oldx < 2) {
     differencex = oldx + 1;
-  } else if (player.position[0] == 0 && oldx > 6) {
+  } else if (player.position[0] === 0 && oldx > 6) {
     differencex = oldx - 9;
-  } else if (player.position[0] == 1 && oldx == 8) {
+  } else if (player.position[0] === 1 && oldx === 8) {
     differencex = -2;
   }
 
   if (Math.abs(player.position[1] - oldy) < 3) {
     differencey = oldy - player.position[1];
-  } else if (player.position[1] == 7 && oldy == 0) {
+  } else if (player.position[1] === 7 && oldy === 0) {
     differencey = 2;
-  } else if (player.position[1] == 8 && oldy < 2) {
+  } else if (player.position[1] === 8 && oldy < 2) {
     differencey = oldy + 1;
-  } else if (player.position[1] == 0 && oldy > 6) {
+  } else if (player.position[1] === 0 && oldy > 6) {
     differencey = oldy - 9;
-  } else if (player.position[1] == 1 && oldy == 8) {
+  } else if (player.position[1] === 1 && oldy === 8) {
     differencey = -2;
   }
 
-  var index = 12 + differencex + 5 * differencey;
+  let index = 12 + differencex + 5 * differencey;
   if (index > -1) {
     movePlayer(id, oldx, oldy, x, y, index);
   }
 });
 
 socket.on("updatePlayers", (users) => {
-  const players = JSON.parse(users);
+  players = JSON.parse(users);
   //$("players").innerText="Players online: "+players.length;
   //drawArrows();
   area.drawAll(players);
@@ -402,7 +396,7 @@ socket.on("set", (set) => {
 });
 
 socket.on("hints", (hints) => {
-  player.hints--;
+  player.hints = hints;
   $("hints").innerText = "Hints left: " + player.hints;
   area.displayText(area.boardSets(), players);
   setTimeout(() => {
@@ -433,8 +427,8 @@ socket.on("updateHighScores", (newScoresToday, newScoresAllTime) => {
 
 socket.on("highscoresAllTime", (newScoresAllTime) => {
   highscoresAllTime = JSON.parse(newScoresAllTime);
-  var highscoreText = "Highscores alltime:<br>";
-  for (var i = 0; i < highscoresAllTime.length; i++) {
+  let highscoreText = "Highscores alltime:<br>";
+  for (let i = 0; i < highscoresAllTime.length; i++) {
     highscoreText +=
       i +
       1 +
@@ -449,8 +443,8 @@ socket.on("highscoresAllTime", (newScoresAllTime) => {
 
 socket.on("highscoresToday", (newScoresToday) => {
   highscoresToday = JSON.parse(newScoresToday);
-  var highscoreText = "Highscores today:<br>";
-  for (var i = 0; i < highscoresToday.length; i++) {
+  let highscoreText = "Highscores today:<br>";
+  for (let i = 0; i < highscoresToday.length; i++) {
     highscoreText +=
       i +
       1 +
@@ -465,8 +459,8 @@ socket.on("highscoresToday", (newScoresToday) => {
 
 socket.on("highscoresThisMonth", (newScoresToday) => {
   highscoresThisMonth = JSON.parse(newScoresToday);
-  var highscoreText = "Highscores this month:<br>";
-  for (var i = 0; i < highscoresThisMonth.length; i++) {
+  let highscoreText = "Highscores this month:<br>";
+  for (let i = 0; i < highscoresThisMonth.length; i++) {
     highscoreText +=
       i +
       1 +
@@ -481,8 +475,8 @@ socket.on("highscoresThisMonth", (newScoresToday) => {
 
 socket.on("highscoresThisYear", (newScoresToday) => {
   highscoresThisYear = JSON.parse(newScoresToday);
-  var highscoreText = "Highscores this year:<br>";
-  for (var i = 0; i < highscoresThisYear.length; i++) {
+  let highscoreText = "Highscores this year:<br>";
+  for (let i = 0; i < highscoresThisYear.length; i++) {
     highscoreText +=
       i +
       1 +

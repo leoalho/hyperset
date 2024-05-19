@@ -321,7 +321,7 @@ export class Area {
         differencey = -2;
       }
 
-      var index = 12 + differencex + 5 * differencey;
+      const index = 12 + differencex + 5 * differencey;
       if (index > -1) {
         this.drawPlayer(
           this.cards[index].x + this.size,
